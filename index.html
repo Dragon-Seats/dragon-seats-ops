@@ -3816,25 +3816,52 @@ function renderSuppliers(){
    Lives in DB.clients and shares the Suppliers page as its own sub-tab. Each card shows the
    client's contact info and their full shipment history from DB.shipments. */
 const CLIENT_FIELDS=[
-  ['name','School / team name','e.g. Penn State Football'],
+  ['name','Client / organization','e.g. Penn State Football'],
+  ['tags','Type / level','e.g. NCAA, NFL, MLB, Ski resort'],
+  ['conference','Conference','e.g. Big Ten, SEC'],
+  ['stadium','Stadium','e.g. Beaver Stadium'],
+  ['surface','Surface','e.g. Natural, FieldTurf'],
+  ['_h','Drop-off address'],
+  ['street','Street','Street address'],
+  ['city','City','City'],
+  ['state','State','e.g. PA'],
+  ['zip','ZIP','e.g. 16802'],
+  ['_h','Primary contact'],
   ['contact','Contact','Contact person'],
+  ['contactRole','Contact role','e.g. Director of Football Operations'],
   ['phone','Phone','(555) 555-5555'],
   ['email','Email','name@school.edu'],
-  ['address','School / drop-off address','Street, City, State ZIP'],
-  ['tags','Type / level','e.g. NCAA, Big Ten'],
-  ['notes','Notes','—']
+  ['_h','Second contact'],
+  ['contact2','Contact 2','Contact person'],
+  ['contact2Role','Contact 2 role','e.g. Equipment Manager'],
+  ['phone2','Phone 2','(555) 555-5555'],
+  ['email2','Email 2','name@school.edu'],
+  ['_h','Notes'],
+  ['notes','Notes','—'],
+  ['toVerify','To verify','Anything that needs checking']
 ];
+const CLIENT_INPUTS=CLIENT_FIELDS.filter(f=>f[0]!=='_h');
+/* Every stored client field except the name. `address` stays the single display/shipping string
+   (used by shipments); it is rebuilt from street/city/state/zip whenever those are filled. */
+const CLIENT_DATA_KEYS=CLIENT_INPUTS.map(f=>f[0]).filter(k=>k!=='name').concat(['address']);
+function composeClientAddress(c){
+  const csz=[c.city, [c.state,c.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+  return [c.street, csz].filter(Boolean).join(', ');
+}
 function clientShipments(c){
   return (DB.shipments||[]).filter(sh=>sh.clientId===c.id)
     .slice().sort((a,b)=>((b.shipDate||b.expectedDate||b.createdAt||'')).localeCompare(a.shipDate||a.expectedDate||a.createdAt||''));
 }
 function openClientModal(existing){
   const c=existing||{};
+  const hasParts=!!(c.street||c.city||c.state||c.zip);
+  const val=k=>(k==='street' && !hasParts) ? (c.address||'') : (c[k]||'');
   const field=([k,label,ph])=>{
-    const wide=(k==='address'||k==='notes'||k==='name');
-    const input = k==='notes'
-      ? '<textarea id="cl-f-'+k+'" rows="2" placeholder="'+escAttr(ph)+'" style="width:100%;font:inherit;box-sizing:border-box">'+escAttr(c[k]||'')+'</textarea>'
-      : '<input type="text" id="cl-f-'+k+'" style="width:100%;font:inherit;box-sizing:border-box" placeholder="'+escAttr(ph)+'" value="'+escAttr(c[k]||'')+'">';
+    if(k==='_h') return '<div class="sup-form-field wide" style="margin-top:6px;padding-top:8px;border-top:1px solid var(--line);font-weight:600;font-size:13px">'+escAttr(label)+'</div>';
+    const wide=(k==='street'||k==='notes'||k==='name'||k==='toVerify');
+    const input = (k==='notes'||k==='toVerify')
+      ? '<textarea id="cl-f-'+k+'" rows="2" placeholder="'+escAttr(ph)+'" style="width:100%;font:inherit;box-sizing:border-box">'+escAttr(val(k))+'</textarea>'
+      : '<input type="text" id="cl-f-'+k+'" style="width:100%;font:inherit;box-sizing:border-box" placeholder="'+escAttr(ph)+'" value="'+escAttr(val(k))+'">';
     return '<div class="sup-form-field'+(wide?' wide':'')+'"><label>'+label+'</label>'+input+'</div>';
   };
   openModal(existing?'Edit client':'New client',
@@ -3850,7 +3877,8 @@ function openClientModal(existing){
     const dup=(DB.clients||[]).find(x=>x!==existing && (x.name||'').trim().toLowerCase()===name.toLowerCase());
     if(dup){ alertModal('There is already a client named '+dup.name+'.'); return; }
     const target = existing || {id:uid(), createdAt:new Date().toISOString()};
-    CLIENT_FIELDS.forEach(([k])=>{ target[k]=document.getElementById('cl-f-'+k).value.trim(); });
+    CLIENT_INPUTS.forEach(([k])=>{ target[k]=document.getElementById('cl-f-'+k).value.trim(); });
+    target.address=composeClientAddress(target);
     if(!existing) DB.clients.push(target);
     save(); closeModal(); renderSuppliers(); renderCounts();
     setTimeout(()=>{
@@ -3868,8 +3896,8 @@ function openClientModal(existing){
       DB.clients=DB.clients.filter(x=>x.id!==existing.id); save(); renderSuppliers(); renderCounts();
     });
   });
-  CLIENT_FIELDS.forEach(([k])=>{
-    if(k==='notes') return;
+  CLIENT_INPUTS.forEach(([k])=>{
+    if(k==='notes'||k==='toVerify') return;
     document.getElementById('cl-f-'+k).addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); commit(); } });
   });
 }
@@ -3881,11 +3909,21 @@ function clientCardHtml(c){
   const tags=String(c.tags||'').split(/[,;/]+/).map(x=>x.trim()).filter(Boolean);
   const row=(ico,html,title)=>'<div class="sup-line" title="'+escAttr(title||'')+'"><span class="sup-ico">'+ico+'</span><span class="sup-val">'+html+'</span></div>';
   const empty=t=>'<span class="sup-empty">'+t+'</span>';
+  if(c.conference && !tags.some(t=>t.toLowerCase()===String(c.conference).trim().toLowerCase())) tags.push(String(c.conference).trim());
+  const role=r=>r?' <span class="sup-empty">· '+escAttr(r)+'</span>':'';
+  const has2=!!(c.contact2||c.contact2Role||c.phone2||c.email2);
+  const venue=[c.stadium,c.surface].filter(Boolean).map(escAttr).join(' <span class="sup-empty">·</span> ');
   const contactLines=
-    row('👤', c.contact?escAttr(c.contact):empty('No contact name'),'Contact')+
+    row('👤', (c.contact?escAttr(c.contact):empty('No contact name'))+role(c.contactRole),'Contact')+
     row('✉', c.email?'<a href="mailto:'+escAttr(c.email)+'">'+escAttr(c.email)+'</a>':empty('No email'),'Email')+
     row('☎', c.phone?'<a href="'+escAttr(telHref(c.phone))+'">'+escAttr(c.phone)+'</a>':empty('No phone'),'Phone')+
-    row('📍', c.address?escAttr(c.address):empty('No drop-off address'),'School / drop-off address');
+    (has2?
+      row('👤', (c.contact2?escAttr(c.contact2):empty('No name'))+role(c.contact2Role),'Contact 2')+
+      (c.email2?row('✉','<a href="mailto:'+escAttr(c.email2)+'">'+escAttr(c.email2)+'</a>','Email 2'):'')+
+      (c.phone2?row('☎','<a href="'+escAttr(telHref(c.phone2))+'">'+escAttr(c.phone2)+'</a>','Phone 2'):'')
+    :'')+
+    row('📍', c.address?escAttr(c.address):empty('No drop-off address'),'Drop-off address')+
+    (venue?row('🏟', venue,'Stadium · Surface'):'');
   const shipRows=ships.map(sh=>{
     const nFiles=(sh.docs||[]).length;
     const st=shipIsLate(sh)?'Late':sh.status;
@@ -3901,7 +3939,7 @@ function clientCardHtml(c){
     '<div class="sup-card-head">'+
       '<div class="sup-avatar client-avatar">'+escAttr(supplierInitials(c.name))+'</div>'+
       '<div class="sup-title"><div class="sup-name">'+escAttr(c.name||'(unnamed)')+'</div>'+
-        '<div class="sup-specs">'+tags.map(x=>'<span class="sup-spec">'+escAttr(x)+'</span>').join('')+'</div>'+
+        '<div class="sup-specs">'+tags.map(x=>'<span class="sup-spec">'+escAttr(x)+'</span>').join('')+(c.toVerify?'<span class="sup-spec" style="background:#fff4e0;color:#8a5a00" title="'+escAttr(c.toVerify)+'">⚠ To verify</span>':'')+'</div>'+
       '</div>'+
       '<div class="sup-head-btns no-print"><button type="button" class="btn sm subtle client-new-ship" title="New shipment to '+escAttr(c.name||'this client')+'">+ Ship</button>'+
       '<button type="button" class="btn sm subtle client-edit" title="Edit client">Edit</button></div>'+
@@ -3916,6 +3954,7 @@ function clientCardHtml(c){
     '<details class="sup-docs-details"><summary><span class="sup-doc-caret">▸</span>Notes &amp; shipment history ('+ships.length+')</summary>'+
       '<div class="sup-more">'+
         (c.notes?'<div class="sup-notes">'+escAttr(c.notes)+'</div>':'')+
+        (c.toVerify?'<div class="sup-notes" style="background:#fff4e0;color:#5c3d00"><b>To verify:</b> '+escAttr(c.toVerify)+'</div>':'')+
         '<div><div class="sup-more-label">Shipment history</div><div class="sup-doc-list">'+(shipRows||'<p class="note" style="margin:4px 0">No shipments to this client yet.</p>')+'</div></div>'+
       '</div>'+
     '</details>'+
@@ -3925,7 +3964,7 @@ function renderClients(){
   const el=document.getElementById('panel-suppliers');
   const cq=(clientSearch||'').trim().toLowerCase();
   const all=DB.clients||[];
-  const hay=c=>[c.name,c.contact,c.email,c.phone,c.address,c.tags,c.notes].concat(clientShipments(c).map(sh=>[sh.contents,sh.tracking].join(' '))).join(' ').toLowerCase();
+  const hay=c=>[c.name].concat(CLIENT_DATA_KEYS.map(k=>c[k])).concat(clientShipments(c).map(sh=>[sh.contents,sh.tracking].join(' '))).join(' ').toLowerCase();
   const nMissing=all.filter(clientMissingInfo).length;
   if(!nMissing) clientMissingOnly=false;
   const visible=(cq? all.filter(c=>hay(c).includes(cq)) : all).filter(c=>!clientMissingOnly||clientMissingInfo(c)).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
@@ -4030,19 +4069,25 @@ async function readXlsxRows(buf){
   });
   return rows;
 }
-const CLIENT_IMPORT_LABELS={name:'School / team name',contact:'Contact',phone:'Phone',email:'Email',address:'Address',street:'Street',city:'City',state:'State',zip:'ZIP',tags:'Type / level',notes:'Notes'};
+const CLIENT_IMPORT_LABELS=Object.assign({address:'Address'}, Object.fromEntries(CLIENT_INPUTS.map(([k,l])=>[k,l])));
 function clientImportFieldFor(h){
   h=String(h||'').trim().toLowerCase();
   if(!h) return null;
-  if(/e-?mail/.test(h)) return 'email';
-  if(/phone|cell|mobile|\btel\b|number|^#$/.test(h)) return 'phone';
+  const two=/(^|[^a-z0-9])(2|ii|second(ary)?|alt(ernate)?)([^a-z0-9]|$)/.test(h);
+  if(/verify|to check|needs? review/.test(h)) return 'toVerify';
+  if(/e-?mail/.test(h)) return two?'email2':'email';
+  if(/phone|cell|mobile|\btel\b|number|^#$/.test(h)) return two?'phone2':'phone';
   if(/zip|postal/.test(h)) return 'zip';
   if(/^state$|^st$|province/.test(h)) return 'state';
   if(/^city$|^town$/.test(h)) return 'city';
   if(/^street|address\s*(line\s*)?1|^addr1/.test(h)) return 'street';
+  if(/stadium|venue/.test(h)) return 'stadium';
+  if(/surface|turf/.test(h)) return 'surface';
+  if(/conference/.test(h)) return 'conference';
   if(/address|drop|ship|deliver|location/.test(h)) return 'address';
-  if(/contact|person|coordinator|manager|trainer|director|coach|attn|rep/.test(h)) return 'contact';
-  if(/type|level|series|conference|league|division|sport|tag|category/.test(h)) return 'tags';
+  if(/\brole\b|\btitle\b|position/.test(h)) return two?'contact2Role':'contactRole';
+  if(/contact|person|coordinator|manager|trainer|director|coach|attn|rep/.test(h)) return two?'contact2':'contact';
+  if(/type|level|series|league|division|sport|tag|category/.test(h)) return 'tags';
   if(/note|comment/.test(h)) return 'notes';
   if(/school|team|client|program|customer|organi[sz]ation|university|college|account|name/.test(h)) return 'name';
   return null;
@@ -4054,29 +4099,28 @@ function clientRowsToRecords(rows){
   const hasHeader=head.filter(Boolean).length>0 && head.includes('name');
   let cols;
   if(hasHeader){
-    const used={}; cols=head.map(f=>{ if(!f) return null; if(['street','city','state','zip'].includes(f)) return f; if(used[f]) return null; used[f]=1; return f; });
+    const used={}; cols=head.map(f=>{ if(!f || used[f]) return null; used[f]=1; return f; });
   } else cols=['name','contact','phone','email','address','tags','notes'];
   const body=hasHeader?rows.slice(1):rows;
   const records=body.map(r=>{
-    const rec={name:'',contact:'',phone:'',email:'',address:'',tags:'',notes:''}, parts={};
-    cols.forEach((f,i)=>{ const v=r[i]||''; if(!f||!v) return; if(['street','city','state','zip'].includes(f)) parts[f]=v; else rec[f]=v; });
-    const csz=[parts.city, [parts.state,parts.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
-    const extra=[parts.street, csz].filter(Boolean).join(', ');
-    if(extra) rec.address=rec.address?(rec.address+(parts.street?'':', '+csz)):extra;
+    const rec={name:''}; CLIENT_DATA_KEYS.forEach(k=>rec[k]='');
+    cols.forEach((f,i)=>{ const v=r[i]||''; if(!f||!v) return; rec[f]=v; });
+    const extra=composeClientAddress(rec);
+    if(extra) rec.address=rec.address?(rec.address+(rec.street?'':', '+[rec.city,[rec.state,rec.zip].filter(Boolean).join(' ')].filter(Boolean).join(', '))):extra;
     return rec;
   });
   const mapping=hasHeader?rows[0].map((h,i)=>cols[i]?[h,CLIENT_IMPORT_LABELS[cols[i]]]:[h,null]):null;
   return {records, mapping};
 }
 function downloadClientTemplate(){
-  const csv='﻿'+['School / team name,Contact,Phone,Email,School / drop-off address,Type / level,Notes','Example University Football,,,,,"NCAA, Big Ten",'].join('\r\n');
+  const csv='﻿'+['Client / organization,Type / level,Conference,Stadium,Surface,Street,City,State,ZIP,Contact,Contact role,Phone,Email,Contact 2,Contact 2 role,Phone 2,Email 2,Notes,To verify','Example University Football,NCAA,Big Ten,Example Stadium,Natural,1 Stadium Dr,Example City,PA,16802,,,,,,,,,,'].join('\r\n');
   const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='dragon-seats-client-import-template.csv'; a.click();
 }
 function openClientImportModal(){
   openModal('Import clients',
     '<p style="margin-top:0">Upload an Excel (.xlsx) or CSV file with one school or team per row. Only the name is required — contact, phone, email and address can be blank and filled in later (re-import the updated sheet, or use Edit on the card).</p>'+
-    '<p class="note">Columns are matched by their heading: <b>School / Team</b>, <b>Contact</b>, <b>Phone</b>, <b>Email</b>, <b>Address</b> (or Drop-off address). Separate <b>City / State / ZIP</b> columns are combined into the address. If there are no headings, the columns are read in that order.</p>'+
+    '<p class="note">Columns are matched by their heading: <b>Client / organization</b> (or School / Team), <b>Type / level</b>, <b>Conference</b>, <b>Stadium</b>, <b>Surface</b>, <b>Street</b>, <b>City</b>, <b>State</b>, <b>ZIP</b> (or one <b>Address</b> column), <b>Contact</b>, <b>Contact role</b>, <b>Phone</b>, <b>Email</b>, <b>Contact 2</b>, <b>Contact 2 role</b>, <b>Phone 2</b>, <b>Email 2</b>, <b>Notes</b> and <b>To verify</b>. If there are no headings, the columns are read in that order.</p>'+
     '<div class="toolbar" style="margin-top:16px"><button class="btn subtle" id="ci-template">Download template</button><div class="toolbar-spacer"></div>'+
     '<button class="btn" id="ci-cancel">Cancel</button><button class="btn accent" id="ci-choose">Choose file…</button></div>'+
     '<input type="file" id="ci-file" accept=".xlsx,.csv,.txt,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden">');
@@ -4104,7 +4148,7 @@ function openClientImportPreview(res, fileName){
   const items=res.records.map(r=>{
     const k=clientNameKey(r.name);
     if(!k){ nNoName++; return {r, status:'skip', why:'No name'}; }
-    if(seen[k]){ nDupe++; const first=seen[k]; ['contact','phone','email','address','tags','notes'].forEach(f=>{ if(!first.r[f] && r[f]) first.r[f]=r[f]; }); return {r, status:'skip', why:'Repeated in file'}; }
+    if(seen[k]){ nDupe++; const first=seen[k]; CLIENT_DATA_KEYS.forEach(f=>{ if(!first.r[f] && r[f]) first.r[f]=r[f]; }); return {r, status:'skip', why:'Repeated in file'}; }
     const it={r, status: existing[k]?'match':'new', client: existing[k]||null}; seen[k]=it;
     if(it.status==='new') nNew++; else nMatch++;
     return it;
@@ -4114,7 +4158,7 @@ function openClientImportPreview(res, fileName){
     : it.status==='match'?'<span class="doc-type-tag" style="background:#e8f0fe;color:#1a4fa0">Already listed</span>'
     : '<span class="doc-type-tag" style="background:#f1f1f1;color:#777" title="'+escAttr(it.why)+'">Skip</span>';
   const mapLine=res.mapping?('<p class="note" style="margin:6px 0 10px">Columns: '+res.mapping.map(([h,l])=>l?'<b>'+escAttr(h)+'</b> → '+escAttr(l):'<span style="text-decoration:line-through" title="Not imported">'+escAttr(h||'(blank)')+'</span>').join(' · ')+'</p>')
-    :'<p class="note" style="margin:6px 0 10px">No headings found — read columns in order: School/team, Contact, Phone, Email, Address.</p>';
+    :'<p class="note" style="margin:6px 0 10px">No headings found — read columns in order: Client, Contact, Phone, Email, Address, Type / level, Notes.</p>';
   openModal('Import clients — review',
     '<p style="margin:0"><b>'+escAttr(fileName)+'</b>: '+nNew+' new, '+nMatch+' already in your list'+(nNoName?', '+nNoName+' without a name (skipped)':'')+(nDupe?', '+nDupe+' repeated rows merged':'')+'.</p>'+mapLine+
     (nMatch?'<div style="margin:0 0 10px"><div style="font-weight:600;margin-bottom:4px">For schools already in your list:</div>'+
@@ -4122,8 +4166,8 @@ function openClientImportPreview(res, fileName){
       '<label style="display:block"><input type="radio" name="ci-mode" value="replace"> Update with info from the file (blank cells in the file never erase anything)</label>'+
       '<label style="display:block"><input type="radio" name="ci-mode" value="skip"> Leave them alone</label></div>':'')+
     '<div style="max-height:380px;overflow:auto;border:1px solid var(--line);border-radius:8px">'+
-      '<table class="table" style="width:100%;font-size:13px"><thead><tr><th></th><th>School / team</th><th>Contact</th><th>Phone</th><th>Email</th><th>Address</th></tr></thead><tbody>'+
-      items.map(it=>'<tr'+(it.status==='skip'?' style="opacity:.55"':'')+'><td>'+badge(it)+'</td><td>'+cell(it.r.name)+'</td><td>'+cell(it.r.contact)+'</td><td>'+cell(it.r.phone)+'</td><td>'+cell(it.r.email)+'</td><td>'+cell(it.r.address)+'</td></tr>').join('')+
+      '<table class="table" style="width:100%;font-size:13px"><thead><tr><th></th><th>Client</th><th>Type</th><th>Stadium</th><th>Contact</th><th>Phone</th><th>Email</th><th>Contact 2</th><th>Address</th></tr></thead><tbody>'+
+      items.map(it=>'<tr'+(it.status==='skip'?' style="opacity:.55"':'')+'><td>'+badge(it)+'</td><td>'+cell(it.r.name)+'</td><td>'+cell(it.r.tags)+'</td><td>'+cell(it.r.stadium)+'</td><td>'+cell(it.r.contact)+'</td><td>'+cell(it.r.phone)+'</td><td>'+cell(it.r.email)+'</td><td>'+cell(it.r.contact2)+'</td><td>'+cell(it.r.address)+'</td></tr>').join('')+
       '</tbody></table></div>'+
     '<div class="toolbar" style="margin-top:16px"><div class="toolbar-spacer"></div><button class="btn" id="ci-back">Cancel</button>'+
     '<button class="btn accent" id="ci-go"'+((nNew+nMatch)?'':' disabled')+'>Import '+(nNew+nMatch)+' client'+((nNew+nMatch)===1?'':'s')+'</button></div>',
@@ -4131,7 +4175,7 @@ function openClientImportPreview(res, fileName){
   document.getElementById('ci-back').addEventListener('click',closeModal);
   document.getElementById('ci-go').addEventListener('click',()=>{
     const modeEl=document.querySelector('input[name="ci-mode"]:checked'); const mode=modeEl?modeEl.value:'fill';
-    const FIELDS=['contact','phone','email','address','tags','notes'];
+    const FIELDS=CLIENT_DATA_KEYS;
     let added=0, updated=0;
     items.forEach(it=>{
       if(it.status==='new'){
@@ -4139,6 +4183,7 @@ function openClientImportPreview(res, fileName){
       } else if(it.status==='match' && mode!=='skip'){
         const c=it.client; let changed=false;
         FIELDS.forEach(f=>{ const v=it.r[f]; if(!v) return; if(mode==='replace' ? c[f]!==v : !c[f]){ c[f]=v; changed=true; } });
+        if(changed && composeClientAddress(c) && ['street','city','state','zip'].some(f=>it.r[f])) c.address=composeClientAddress(c);
         if(changed) updated++;
       }
     });
@@ -6355,6 +6400,8 @@ function openShipmentModal(existing, preset){
     const cl=clientId?clientById(clientId):null;
     if(cl){
       [['contact','ship-m-contact'],['phone','ship-m-phone'],['email','ship-m-email'],['address','ship-m-address']].forEach(([k,id])=>{ const v=$(id).value.trim(); if(v) cl[k]=v; });
+      // A new address typed on a shipment replaces the split street/city/state/zip so they don't disagree
+      if(cl.address && (cl.street||cl.city||cl.state||cl.zip) && composeClientAddress(cl)!==cl.address){ cl.street=cl.address; cl.city=''; cl.state=''; cl.zip=''; }
     }
     const priceRaw=$('ship-m-price').value.trim();
     const target=existing || {id:uid(), createdAt:new Date().toISOString()};
