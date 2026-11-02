@@ -684,6 +684,22 @@ table.ship-table{table-layout:auto;min-width:100%}
 .doc-type-tag.t-ship-out{background:var(--red-tint);color:var(--red-dark)}
 .doc-type-tag.t-ship-in{background:var(--green-tint);color:var(--green)}
 .ship-total-line{font-size:12.5px;color:var(--steel);padding:9px 14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}
+
+/* Searchable item picker (combo) -- replaces the tall native item dropdown on documents */
+.combo{position:relative;display:flex;align-items:center;width:100%;min-width:0}
+.combo .combo-native{display:none !important}
+.combo-input{width:100%;padding-right:28px !important;text-overflow:ellipsis;cursor:pointer}
+.combo-input:focus{cursor:text}
+.combo-toggle{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--steel);font-size:12px;padding:4px 6px;cursor:pointer;line-height:1;min-height:0}
+.combo-pop{position:fixed;z-index:10000;background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);box-shadow:var(--shadow-md);max-height:240px;overflow-y:auto;padding:4px 0;font-size:13px}
+.combo-opt{padding:6px 10px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combo-opt.active{background:var(--steel-soft)}
+.combo-opt.sel{font-weight:600}
+.combo-opt mark{background:var(--amber-tint);color:inherit;padding:0;border-radius:2px}
+.combo-group{padding:6px 10px 2px;font-size:11px;font-weight:600;color:var(--steel);text-transform:uppercase;letter-spacing:.04em}
+.combo-empty,.combo-foot{padding:6px 10px;color:var(--steel);font-size:12px}
+.combo-foot{border-top:1px solid var(--line);margin-top:4px}
+@media print{.combo-toggle{display:none}}
 </style>
 </head>
 <body>
@@ -3800,12 +3816,12 @@ function renderSuppliers(){
    Lives in DB.clients and shares the Suppliers page as its own sub-tab. Each card shows the
    client's contact info and their full shipment history from DB.shipments. */
 const CLIENT_FIELDS=[
-  ['name','Client / team name','e.g. Smith Racing'],
+  ['name','School / team name','e.g. Penn State Football'],
   ['contact','Contact','Contact person'],
   ['phone','Phone','(555) 555-5555'],
-  ['email','Email','name@team.com'],
-  ['address','Ship-to address','Street, City, State ZIP'],
-  ['tags','Type / series','e.g. Late model, Sprint car'],
+  ['email','Email','name@school.edu'],
+  ['address','School / drop-off address','Street, City, State ZIP'],
+  ['tags','Type / level','e.g. NCAA, Big Ten'],
   ['notes','Notes','—']
 ];
 function clientShipments(c){
@@ -3869,7 +3885,7 @@ function clientCardHtml(c){
     row('👤', c.contact?escAttr(c.contact):empty('No contact name'),'Contact')+
     row('✉', c.email?'<a href="mailto:'+escAttr(c.email)+'">'+escAttr(c.email)+'</a>':empty('No email'),'Email')+
     row('☎', c.phone?'<a href="'+escAttr(telHref(c.phone))+'">'+escAttr(c.phone)+'</a>':empty('No phone'),'Phone')+
-    row('📍', c.address?escAttr(c.address):empty('No ship-to address'),'Ship-to address');
+    row('📍', c.address?escAttr(c.address):empty('No drop-off address'),'School / drop-off address');
   const shipRows=ships.map(sh=>{
     const nFiles=(sh.docs||[]).length;
     const st=shipIsLate(sh)?'Late':sh.status;
@@ -3910,11 +3926,14 @@ function renderClients(){
   const cq=(clientSearch||'').trim().toLowerCase();
   const all=DB.clients||[];
   const hay=c=>[c.name,c.contact,c.email,c.phone,c.address,c.tags,c.notes].concat(clientShipments(c).map(sh=>[sh.contents,sh.tracking].join(' '))).join(' ').toLowerCase();
-  const visible=(cq? all.filter(c=>hay(c).includes(cq)) : all).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
-  document.getElementById('page-actions').innerHTML='<button class="btn accent" id="add-client">+ New client</button>';
+  const nMissing=all.filter(clientMissingInfo).length;
+  if(!nMissing) clientMissingOnly=false;
+  const visible=(cq? all.filter(c=>hay(c).includes(cq)) : all).filter(c=>!clientMissingOnly||clientMissingInfo(c)).slice().sort((a,b)=>(a.name||'').localeCompare(b.name||''));
+  document.getElementById('page-actions').innerHTML='<button class="btn" id="import-clients" title="Add a list of schools/teams from an Excel or CSV file">Import list</button><button class="btn accent" id="add-client">+ New client</button>';
   el.innerHTML=supplierSubnavHtml()+
     '<div class="toolbar no-print">'+
-      '<div class="search-input"><input type="text" id="client-search" placeholder="Search client, contact, what was shipped..." value="'+escAttr(clientSearch)+'"></div>'+
+      '<div class="search-input"><input type="text" id="client-search" placeholder="Search school, contact, what was shipped..." value="'+escAttr(clientSearch)+'"></div>'+
+      (nMissing?'<label class="filter-opt" style="display:inline-flex;align-items:center;gap:6px;margin-left:10px;white-space:nowrap;cursor:pointer" title="Show only clients still missing a contact, phone, email or address"><input type="checkbox" id="client-missing-only" '+(clientMissingOnly?'checked':'')+'> Missing contact info ('+nMissing+')</label>':'')+
       '<div class="toolbar-spacer"></div><span class="toolbar-count">'+visible.length+' client'+(visible.length===1?'':'s')+'</span>'+
     '</div>'+
     (visible.length
@@ -3923,6 +3942,9 @@ function renderClients(){
   wireSupplierSubnav(el);
   document.getElementById('client-search').addEventListener('input',e=>{ const pos=e.target.selectionStart; clientSearch=e.target.value; renderClients(); refocusSearch('client-search',pos); });
   document.getElementById('add-client').addEventListener('click',()=>openClientModal(null));
+  document.getElementById('import-clients').addEventListener('click',openClientImportModal);
+  const mo=document.getElementById('client-missing-only');
+  if(mo) mo.addEventListener('change',()=>{ clientMissingOnly=mo.checked; renderClients(); });
   el.querySelectorAll('.client-card').forEach(card=>{
     const c=clientById(card.dataset.id);
     card.querySelector('.client-edit').addEventListener('click',()=>openClientModal(c));
@@ -3931,6 +3953,199 @@ function renderClients(){
   el.querySelectorAll('.view-client-ship').forEach(b=>b.addEventListener('click',()=>{
     const sh=shipmentById(b.dataset.id); if(sh) openShipmentModal(sh);
   }));
+}
+
+/* ---------------- Client list import (Excel .xlsx or CSV) ----------------
+   Adds schools/teams in bulk. Columns are matched by header name (School/Team, Contact,
+   Phone, Email, Address/Drop-off, plus optional City/State/ZIP which are joined into the
+   address). Rows whose name already exists are matched, never duplicated. */
+let clientMissingOnly=false;
+function clientMissingInfo(c){ return !c.contact || !c.phone || !c.email || !c.address; }
+function clientNameKey(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
+function parseCsvRows(text){
+  text=String(text||'').replace(/^﻿/,'');
+  const first=text.split(/\r?\n/)[0]||'';
+  const delim=(first.split('\t').length>first.split(',').length)?'\t':((first.split(';').length>first.split(',').length)?';':',');
+  const rows=[]; let row=[], cell='', q=false;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    if(q){
+      if(ch==='"'){ if(text[i+1]==='"'){ cell+='"'; i++; } else q=false; }
+      else cell+=ch;
+    } else if(ch==='"') q=true;
+    else if(ch===delim){ row.push(cell); cell=''; }
+    else if(ch==='\n' || ch==='\r'){ if(ch==='\r' && text[i+1]==='\n') i++; row.push(cell); rows.push(row); row=[]; cell=''; }
+    else cell+=ch;
+  }
+  if(cell!=='' || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+async function readXlsxRows(buf){
+  const u8=new Uint8Array(buf), dv=new DataView(buf), td=new TextDecoder();
+  let e=u8.length-22; while(e>=0 && dv.getUint32(e,true)!==0x06054b50) e--;
+  if(e<0) throw new Error('This does not look like an Excel (.xlsx) file.');
+  const n=dv.getUint16(e+10,true); let p=dv.getUint32(e+16,true); const files={};
+  for(let i=0;i<n;i++){
+    if(dv.getUint32(p,true)!==0x02014b50) break;
+    const method=dv.getUint16(p+10,true), csize=dv.getUint32(p+20,true), nl=dv.getUint16(p+28,true), xl=dv.getUint16(p+30,true), cl=dv.getUint16(p+32,true), lho=dv.getUint32(p+42,true);
+    files[td.decode(u8.subarray(p+46,p+46+nl))]={method,csize,lho}; p+=46+nl+xl+cl;
+  }
+  const get=async name=>{
+    const f=files[name]; if(!f) return null;
+    const l=f.lho, start=l+30+dv.getUint16(l+26,true)+dv.getUint16(l+28,true), data=u8.subarray(start,start+f.csize);
+    if(f.method===0) return td.decode(data);
+    if(typeof DecompressionStream==='undefined') throw new Error('This browser cannot open .xlsx files. Save the sheet as CSV and import that instead.');
+    return await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+  };
+  const xml=s=>new DOMParser().parseFromString(s,'application/xml');
+  const tags=(d,t)=>Array.from(d.getElementsByTagNameNS('*',t));
+  const ss=[]; const sst=await get('xl/sharedStrings.xml');
+  if(sst) tags(xml(sst),'si').forEach(si=>ss.push(tags(si,'t').filter(t=>!(t.parentNode && t.parentNode.localName==='rPh')).map(t=>t.textContent).join('')));
+  let sheetPath=null;
+  try{
+    const wb=xml(await get('xl/workbook.xml')), sh=tags(wb,'sheet')[0];
+    const rid=sh && (sh.getAttribute('r:id')||Array.from(sh.attributes).find(a=>a.localName==='id')?.value);
+    const rels=xml(await get('xl/_rels/workbook.xml.rels'));
+    const rel=tags(rels,'Relationship').find(r=>r.getAttribute('Id')===rid);
+    if(rel){ const t=rel.getAttribute('Target'); sheetPath=t.startsWith('/')?t.slice(1):'xl/'+t.replace(/^\.\//,''); }
+  }catch(err){}
+  if(!sheetPath || !files[sheetPath]) sheetPath=Object.keys(files).filter(k=>/^xl\/worksheets\/sheet\d+\.xml$/.test(k)).sort((a,b)=>parseInt(a.match(/\d+/))-parseInt(b.match(/\d+/)))[0];
+  if(!sheetPath) throw new Error('No worksheet found in this file.');
+  const colIdx=ref=>{ const m=String(ref||'').match(/^[A-Z]+/); if(!m) return -1; let v=0; for(const ch of m[0]) v=v*26+(ch.charCodeAt(0)-64); return v-1; };
+  const rows=[];
+  tags(xml(await get(sheetPath)),'row').forEach(r=>{
+    const out=[]; let next=0;
+    tags(r,'c').forEach(c=>{
+      let ci=colIdx(c.getAttribute('r')); if(ci<0) ci=next; next=ci+1;
+      const t=c.getAttribute('t'), v=tags(c,'v')[0];
+      let val='';
+      if(t==='s') val=v?(ss[parseInt(v.textContent,10)]||''):'';
+      else if(t==='inlineStr') val=tags(c,'t').map(x=>x.textContent).join('');
+      else if(t==='b') val=v?(v.textContent==='1'?'TRUE':'FALSE'):'';
+      else val=v?v.textContent:'';
+      out[ci]=val;
+    });
+    for(let i=0;i<out.length;i++) if(out[i]==null) out[i]='';
+    rows.push(out);
+  });
+  return rows;
+}
+const CLIENT_IMPORT_LABELS={name:'School / team name',contact:'Contact',phone:'Phone',email:'Email',address:'Address',street:'Street',city:'City',state:'State',zip:'ZIP',tags:'Type / level',notes:'Notes'};
+function clientImportFieldFor(h){
+  h=String(h||'').trim().toLowerCase();
+  if(!h) return null;
+  if(/e-?mail/.test(h)) return 'email';
+  if(/phone|cell|mobile|\btel\b|number|^#$/.test(h)) return 'phone';
+  if(/zip|postal/.test(h)) return 'zip';
+  if(/^state$|^st$|province/.test(h)) return 'state';
+  if(/^city$|^town$/.test(h)) return 'city';
+  if(/^street|address\s*(line\s*)?1|^addr1/.test(h)) return 'street';
+  if(/address|drop|ship|deliver|location/.test(h)) return 'address';
+  if(/contact|person|coordinator|manager|trainer|director|coach|attn|rep/.test(h)) return 'contact';
+  if(/type|level|series|conference|league|division|sport|tag|category/.test(h)) return 'tags';
+  if(/note|comment/.test(h)) return 'notes';
+  if(/school|team|client|program|customer|organi[sz]ation|university|college|account|name/.test(h)) return 'name';
+  return null;
+}
+function clientRowsToRecords(rows){
+  rows=(rows||[]).map(r=>(r||[]).map(v=>String(v==null?'':v).trim())).filter(r=>r.some(v=>v));
+  if(!rows.length) return {records:[], mapping:[]};
+  const head=rows[0].map(clientImportFieldFor);
+  const hasHeader=head.filter(Boolean).length>0 && head.includes('name');
+  let cols;
+  if(hasHeader){
+    const used={}; cols=head.map(f=>{ if(!f) return null; if(['street','city','state','zip'].includes(f)) return f; if(used[f]) return null; used[f]=1; return f; });
+  } else cols=['name','contact','phone','email','address','tags','notes'];
+  const body=hasHeader?rows.slice(1):rows;
+  const records=body.map(r=>{
+    const rec={name:'',contact:'',phone:'',email:'',address:'',tags:'',notes:''}, parts={};
+    cols.forEach((f,i)=>{ const v=r[i]||''; if(!f||!v) return; if(['street','city','state','zip'].includes(f)) parts[f]=v; else rec[f]=v; });
+    const csz=[parts.city, [parts.state,parts.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    const extra=[parts.street, csz].filter(Boolean).join(', ');
+    if(extra) rec.address=rec.address?(rec.address+(parts.street?'':', '+csz)):extra;
+    return rec;
+  });
+  const mapping=hasHeader?rows[0].map((h,i)=>cols[i]?[h,CLIENT_IMPORT_LABELS[cols[i]]]:[h,null]):null;
+  return {records, mapping};
+}
+function downloadClientTemplate(){
+  const csv='﻿'+['School / team name,Contact,Phone,Email,School / drop-off address,Type / level,Notes','Example University Football,,,,,"NCAA, Big Ten",'].join('\r\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download='dragon-seats-client-import-template.csv'; a.click();
+}
+function openClientImportModal(){
+  openModal('Import clients',
+    '<p style="margin-top:0">Upload an Excel (.xlsx) or CSV file with one school or team per row. Only the name is required — contact, phone, email and address can be blank and filled in later (re-import the updated sheet, or use Edit on the card).</p>'+
+    '<p class="note">Columns are matched by their heading: <b>School / Team</b>, <b>Contact</b>, <b>Phone</b>, <b>Email</b>, <b>Address</b> (or Drop-off address). Separate <b>City / State / ZIP</b> columns are combined into the address. If there are no headings, the columns are read in that order.</p>'+
+    '<div class="toolbar" style="margin-top:16px"><button class="btn subtle" id="ci-template">Download template</button><div class="toolbar-spacer"></div>'+
+    '<button class="btn" id="ci-cancel">Cancel</button><button class="btn accent" id="ci-choose">Choose file…</button></div>'+
+    '<input type="file" id="ci-file" accept=".xlsx,.csv,.txt,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" class="hidden">');
+  document.getElementById('ci-template').addEventListener('click',downloadClientTemplate);
+  document.getElementById('ci-cancel').addEventListener('click',closeModal);
+  const fi=document.getElementById('ci-file');
+  document.getElementById('ci-choose').addEventListener('click',()=>fi.click());
+  fi.addEventListener('change',async()=>{
+    const f=fi.files&&fi.files[0]; if(!f) return;
+    try{
+      let rows;
+      if(/\.xls$/i.test(f.name)) throw new Error('Old .xls files are not supported. In Excel, use File › Save As › Excel Workbook (.xlsx) or CSV, then import that.');
+      if(/\.xlsx$/i.test(f.name)) rows=await readXlsxRows(await f.arrayBuffer());
+      else rows=parseCsvRows(await f.text());
+      const res=clientRowsToRecords(rows);
+      if(!res.records.some(r=>r.name)) throw new Error('No school/team names were found. Make sure one column is headed “School” or “Team” (or put the names in the first column).');
+      openClientImportPreview(res, f.name);
+    }catch(err){ alertModal(err&&err.message?err.message:'Could not read that file.'); }
+  });
+}
+function openClientImportPreview(res, fileName){
+  if(!Array.isArray(DB.clients)) DB.clients=[];
+  const existing={}; DB.clients.forEach(c=>{ existing[clientNameKey(c.name)]=c; });
+  const seen={}; let nNew=0, nMatch=0, nNoName=0, nDupe=0;
+  const items=res.records.map(r=>{
+    const k=clientNameKey(r.name);
+    if(!k){ nNoName++; return {r, status:'skip', why:'No name'}; }
+    if(seen[k]){ nDupe++; const first=seen[k]; ['contact','phone','email','address','tags','notes'].forEach(f=>{ if(!first.r[f] && r[f]) first.r[f]=r[f]; }); return {r, status:'skip', why:'Repeated in file'}; }
+    const it={r, status: existing[k]?'match':'new', client: existing[k]||null}; seen[k]=it;
+    if(it.status==='new') nNew++; else nMatch++;
+    return it;
+  });
+  const cell=v=>v?escAttr(v):'<span class="sup-empty">—</span>';
+  const badge=it=>it.status==='new'?'<span class="doc-type-tag" style="background:#e6f4ea;color:#1e6b34">New</span>'
+    : it.status==='match'?'<span class="doc-type-tag" style="background:#e8f0fe;color:#1a4fa0">Already listed</span>'
+    : '<span class="doc-type-tag" style="background:#f1f1f1;color:#777" title="'+escAttr(it.why)+'">Skip</span>';
+  const mapLine=res.mapping?('<p class="note" style="margin:6px 0 10px">Columns: '+res.mapping.map(([h,l])=>l?'<b>'+escAttr(h)+'</b> → '+escAttr(l):'<span style="text-decoration:line-through" title="Not imported">'+escAttr(h||'(blank)')+'</span>').join(' · ')+'</p>')
+    :'<p class="note" style="margin:6px 0 10px">No headings found — read columns in order: School/team, Contact, Phone, Email, Address.</p>';
+  openModal('Import clients — review',
+    '<p style="margin:0"><b>'+escAttr(fileName)+'</b>: '+nNew+' new, '+nMatch+' already in your list'+(nNoName?', '+nNoName+' without a name (skipped)':'')+(nDupe?', '+nDupe+' repeated rows merged':'')+'.</p>'+mapLine+
+    (nMatch?'<div style="margin:0 0 10px"><div style="font-weight:600;margin-bottom:4px">For schools already in your list:</div>'+
+      '<label style="display:block"><input type="radio" name="ci-mode" value="fill" checked> Fill in blank info only (keep what’s already there)</label>'+
+      '<label style="display:block"><input type="radio" name="ci-mode" value="replace"> Update with info from the file (blank cells in the file never erase anything)</label>'+
+      '<label style="display:block"><input type="radio" name="ci-mode" value="skip"> Leave them alone</label></div>':'')+
+    '<div style="max-height:380px;overflow:auto;border:1px solid var(--line);border-radius:8px">'+
+      '<table class="table" style="width:100%;font-size:13px"><thead><tr><th></th><th>School / team</th><th>Contact</th><th>Phone</th><th>Email</th><th>Address</th></tr></thead><tbody>'+
+      items.map(it=>'<tr'+(it.status==='skip'?' style="opacity:.55"':'')+'><td>'+badge(it)+'</td><td>'+cell(it.r.name)+'</td><td>'+cell(it.r.contact)+'</td><td>'+cell(it.r.phone)+'</td><td>'+cell(it.r.email)+'</td><td>'+cell(it.r.address)+'</td></tr>').join('')+
+      '</tbody></table></div>'+
+    '<div class="toolbar" style="margin-top:16px"><div class="toolbar-spacer"></div><button class="btn" id="ci-back">Cancel</button>'+
+    '<button class="btn accent" id="ci-go"'+((nNew+nMatch)?'':' disabled')+'>Import '+(nNew+nMatch)+' client'+((nNew+nMatch)===1?'':'s')+'</button></div>',
+    {wide:true});
+  document.getElementById('ci-back').addEventListener('click',closeModal);
+  document.getElementById('ci-go').addEventListener('click',()=>{
+    const modeEl=document.querySelector('input[name="ci-mode"]:checked'); const mode=modeEl?modeEl.value:'fill';
+    const FIELDS=['contact','phone','email','address','tags','notes'];
+    let added=0, updated=0;
+    items.forEach(it=>{
+      if(it.status==='new'){
+        DB.clients.push(Object.assign({id:uid(), createdAt:new Date().toISOString()}, it.r)); added++;
+      } else if(it.status==='match' && mode!=='skip'){
+        const c=it.client; let changed=false;
+        FIELDS.forEach(f=>{ const v=it.r[f]; if(!v) return; if(mode==='replace' ? c[f]!==v : !c[f]){ c[f]=v; changed=true; } });
+        if(changed) updated++;
+      }
+    });
+    save(); closeModal(); renderSuppliers(); renderCounts();
+    const stillMissing=DB.clients.filter(clientMissingInfo).length;
+    alertModal('Added '+added+' new client'+(added===1?'':'s')+(updated?' and updated '+updated:'')+'.'+(stillMissing?' '+stillMissing+' still need contact info — tick “Missing contact info” to see them.':''),{title:'Import complete'});
+  });
 }
 
 /* Gathers every PO/Quote/Receipt on file for a supplier, most-recent-first within each group. */
@@ -6212,6 +6427,148 @@ async function init(){
   });
   setTab('dash');
 }
+/* ---------- Searchable item picker ----------
+   Upgrades the item dropdowns on POs, quotes, receipts, requests and the document
+   "Check & save" screen into a type-to-search box with a compact, scrollable list
+   (click the arrow to browse everything). The original <select> stays in the page,
+   hidden, and still fires 'change', so all existing wiring keeps working. */
+const COMBO_SELECTOR='select.item-select, select.ir-item';
+let comboOpen=null; // {sel, input, pop, items, active}
+function comboLabel(sel){ const o=sel.options[sel.selectedIndex]; return o?o.text:''; }
+function comboEnhance(root){
+  (root||document).querySelectorAll(COMBO_SELECTOR).forEach(sel=>{
+    if(sel.dataset.combo) return;
+    sel.dataset.combo='1';
+    const wrap=document.createElement('div'); wrap.className='combo';
+    const input=document.createElement('input');
+    input.type='text'; input.className='combo-input'; input.autocomplete='off'; input.spellcheck=false; input.placeholder='Search items…';
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='combo-toggle no-print'; btn.tabIndex=-1; btn.title='Show all items'; btn.textContent='▾';
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(input); wrap.appendChild(btn); wrap.appendChild(sel);
+    sel.classList.add('combo-native');
+    input.value=comboLabel(sel); input.title=input.value;
+    input.addEventListener('focus',()=>{ input.select(); comboShow(sel,input,''); });
+    input.addEventListener('input',()=>comboShow(sel,input,input.value));
+    input.addEventListener('keydown',e=>comboKey(e,sel,input));
+    input.addEventListener('blur',()=>{ if(comboOpen && comboOpen.sel===sel) comboClose(true); });
+    btn.addEventListener('mousedown',e=>{
+      e.preventDefault();
+      if(comboOpen && comboOpen.sel===sel) comboClose(true);
+      else if(document.activeElement===input) comboShow(sel,input,'');
+      else input.focus();
+    });
+  });
+}
+function comboMarkup(text, terms){
+  if(!terms.length) return escAttr(text);
+  const low=text.toLowerCase(); const hit=new Array(text.length).fill(false);
+  terms.forEach(t=>{ let i=low.indexOf(t); while(i!==-1){ for(let j=i;j<i+t.length;j++) hit[j]=true; i=low.indexOf(t,i+t.length); } });
+  let out='', on=false;
+  for(let i=0;i<text.length;i++){
+    if(hit[i]!==on){ out+=on?'</mark>':'<mark>'; on=hit[i]; }
+    out+=escAttr(text[i]);
+  }
+  return out+(on?'</mark>':'');
+}
+function comboShow(sel,input,q){
+  if(comboOpen && comboOpen.sel!==sel) comboClose(true);
+  if(!comboOpen){
+    const pop=document.createElement('div'); pop.className='combo-pop';
+    pop.addEventListener('mousedown',e=>{ e.preventDefault(); const r=e.target.closest('.combo-opt'); if(r) comboPick(Number(r.dataset.k)); });
+    document.body.appendChild(pop);
+    comboOpen={sel, input, pop, items:[], active:0};
+  }
+  const st=comboOpen, pop=st.pop;
+  const terms=String(q||'').toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const items=[]; let html='', lastGroup='', total=0, selK=-1;
+  Array.from(sel.options).forEach(o=>{
+    const special=String(o.value).startsWith('__');
+    const g=(o.parentNode && o.parentNode.tagName==='OPTGROUP')?o.parentNode.label:'';
+    if(!special) total++;
+    if(terms.length && !special){ const hay=(o.text+' '+g).toLowerCase(); if(!terms.every(t=>hay.includes(t))) return; }
+    if(g && g!==lastGroup) html+='<div class="combo-group">'+escAttr(g)+'</div>';
+    lastGroup=g;
+    const k=items.length; items.push(o);
+    if(o.selected) selK=k;
+    html+='<div class="combo-opt'+(o.selected?' sel':'')+'" data-k="'+k+'" title="'+escAttr(o.text)+'">'+comboMarkup(o.text, special?[]:terms)+'</div>';
+  });
+  const shown=items.filter(o=>!String(o.value).startsWith('__')).length;
+  if(!shown && terms.length) html+='<div class="combo-empty">No items match “'+escAttr(q.trim())+'”</div>';
+  html+='<div class="combo-foot">'+(terms.length?(shown+' of '+total+' items'):(total+' items · type to search'))+'</div>';
+  pop.innerHTML=html;
+  st.items=items;
+  // highlight: current item when browsing, first real match when searching
+  let a=0;
+  if(!terms.length && selK>=0) a=selK;
+  else if(terms.length){ const f=items.findIndex(o=>!String(o.value).startsWith('__')); a=f>=0?f:0; }
+  comboSetActive(a, true);
+  comboPlace();
+}
+function comboSetActive(k, center){
+  const st=comboOpen; if(!st) return;
+  if(!st.items.length){ st.active=-1; return; }
+  k=Math.max(0, Math.min(st.items.length-1, k)); st.active=k;
+  st.pop.querySelectorAll('.combo-opt.active').forEach(el=>el.classList.remove('active'));
+  const el=st.pop.querySelector('.combo-opt[data-k="'+k+'"]');
+  if(el){ el.classList.add('active');
+    if(center) st.pop.scrollTop=Math.max(0, el.offsetTop - st.pop.clientHeight/2 + el.offsetHeight/2);
+    else el.scrollIntoView({block:'nearest'}); }
+}
+function comboPlace(){
+  const st=comboOpen; if(!st) return;
+  const r=st.input.getBoundingClientRect();
+  if(!r.width && !r.height){ comboClose(true); return; }
+  const pop=st.pop, maxH=240;
+  pop.style.minWidth=Math.max(r.width, 240)+'px';
+  pop.style.maxWidth=Math.max(r.width, 420)+'px';
+  const left=Math.min(r.left, window.innerWidth - Math.max(r.width,240) - 8);
+  pop.style.left=Math.max(8,left)+'px';
+  const below=window.innerHeight - r.bottom - 8, above=r.top - 8;
+  if(below < Math.min(maxH, pop.scrollHeight) && above > below){
+    pop.style.maxHeight=Math.min(maxH, above-4)+'px'; pop.style.top='auto'; pop.style.bottom=(window.innerHeight - r.top + 4)+'px';
+  } else {
+    pop.style.maxHeight=Math.min(maxH, Math.max(120, below-4))+'px'; pop.style.bottom='auto'; pop.style.top=(r.bottom+4)+'px';
+  }
+}
+function comboClose(revert){
+  const st=comboOpen; if(!st) return;
+  comboOpen=null;
+  st.pop.remove();
+  if(revert){ st.input.value=comboLabel(st.sel); st.input.title=st.input.value; }
+}
+function comboPick(k){
+  const st=comboOpen; if(!st) return;
+  const o=st.items[k]; if(!o) return;
+  const changed=st.sel.value!==o.value;
+  st.sel.value=o.value;
+  st.input.value=o.text; st.input.title=o.text;
+  comboClose(false);
+  st.input.blur();
+  if(changed) st.sel.dispatchEvent(new Event('change',{bubbles:true}));
+}
+function comboKey(e,sel,input){
+  const st=comboOpen;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    if(!st || st.sel!==sel){ comboShow(sel,input,''); return; }
+    comboSetActive(st.active+(e.key==='ArrowDown'?1:-1));
+  } else if(e.key==='Enter'){
+    e.preventDefault();
+    if(st && st.sel===sel && st.active>=0) comboPick(st.active);
+  } else if(e.key==='Escape'){
+    if(st && st.sel===sel){ e.preventDefault(); e.stopPropagation(); comboClose(true); input.blur(); }
+  } else if(e.key==='Tab'){
+    if(st && st.sel===sel) comboClose(true);
+  }
+}
+window.addEventListener('scroll', e=>{ if(comboOpen && e.target!==comboOpen.pop) comboPlace(); }, true);
+window.addEventListener('resize', ()=>{ if(comboOpen) comboPlace(); });
+new MutationObserver(muts=>{
+  if(comboOpen && !document.body.contains(comboOpen.input)) comboClose(false);
+  if(muts.some(m=>m.addedNodes.length)) comboEnhance(document);
+}).observe(document.body,{childList:true, subtree:true});
+comboEnhance(document);
 init();
 </script>
 </body>
