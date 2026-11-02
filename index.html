@@ -449,6 +449,14 @@ tr.row-editing{background:#fbf7f0}
 .item-tile.is-late{border-left-color:var(--red)}
 .item-tile.is-soon{border-left-color:var(--amber)}
 .item-tile.is-selected{border-color:var(--red);box-shadow:0 0 0 2px rgba(170,2,1,.15);background:#fffafa}
+.it-pic{display:flex;align-items:center;justify-content:center;height:120px;margin:-12px -14px 2px;background:#fff;border-bottom:1px solid var(--line);border-radius:var(--radius-md) var(--radius-md) 0 0;overflow:hidden}
+.it-pic img{max-width:100%;max-height:100%;object-fit:contain;padding:8px;box-sizing:border-box}
+.it-pic.is-empty{background:#f6f5f3;color:#b9b5ae;font-size:30px}
+.item-photo{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--line)}
+.item-photo .ip-box{flex:0 0 auto;width:150px;height:150px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius-md);overflow:hidden}
+.item-photo .ip-box img{max-width:100%;max-height:100%;object-fit:contain;padding:6px;box-sizing:border-box}
+.item-photo .ip-box.is-empty{background:#f6f5f3;color:#b9b5ae;font-size:40px}
+.item-photo .ip-actions{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .it-name{font-weight:600;font-size:13.5px;line-height:1.3;color:var(--ink)}
 .it-stock{font-size:11.5px;color:var(--steel)}
 .it-stock b{font-family:'JetBrains Mono',monospace;font-size:18px;color:var(--ink);font-weight:600}
@@ -2405,6 +2413,51 @@ const ITEMS_STATUS_FILTER_OPTS=[['','All statuses'],['late','Past due'],['soon',
 function itemsSupplierIdsOf(it){ return (it.links||[]).map(l=>l.supplierId).filter(Boolean); }
 function itemCatKey(it){ const known=DB.lists.itemGroups||[]; return (it.itemGroup && known.includes(it.itemGroup)) ? it.itemGroup : '__uncategorized__'; }
 function itemCatLabel(key){ return key==='__uncategorized__' ? 'Uncategorized' : key; }
+/* ---------------- Item pictures ----------------
+   ITEM_PICTURES holds the product photo found on each item's supplier link (Grainger, Amazon,
+   McMaster-Carr, Home Depot, JSP), gathered 2026-11-02. An item's own it.imageUrl (set from the
+   item panel — a pasted image link or an uploaded photo) always wins; it.imageUrl==='' means the
+   picture was removed on purpose. Remote pictures need internet; uploaded ones are stored in the data. */
+const ITEM_PICTURES={"p4ekxaurh6ap":"https://static.grainger.com/rp/s/is/image/Grainger/4XR88_AS02?$adapimg$&hei=300&wid=300","c2xk8upsfgfu":"https://static.grainger.com/rp/s/is/image/Grainger/11X030_AS01?$adapimg$&hei=300&wid=300","qkpgxuutbj8n":"https://static.grainger.com/rp/s/is/image/Grainger/5P558_AS02?$adapimg$&hei=300&wid=300","098yggn595u6":"https://static.grainger.com/rp/s/is/image/Grainger/18D843-A3020-1_v2?$adapimg$&hei=300&wid=300","aouscgmy7oiy":"https://m.media-amazon.com/images/I/51csaqBOgbL._AC_SL400_.jpg","5fw13ge9d31x":"https://static.grainger.com/rp/s/is/image/Grainger/2WU89_AS02?$adapimg$&hei=300&wid=300","suf8dxc0atw1":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/458/45835K632_d8e4b22d-4688-43ad-b099-ae1dd97a674c@4x_1695156614.png","ysqnjll0an7p":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/458/45835K632_d8e4b22d-4688-43ad-b099-ae1dd97a674c@4x_1695156614.png","4kx7pge3u9xv":"https://static.grainger.com/rp/s/is/image/Grainger/2WU92_GC01?$adapimg$&hei=300&wid=300","nyhsj5w1k17w":"https://static.grainger.com/rp/s/is/image/Grainger/2F387-A3020-1_v2?$adapimg$&hei=300&wid=300","ev3rxk50g6o7":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/458/45835K632_d8e4b22d-4688-43ad-b099-ae1dd97a674c@4x_1695156614.png","smwn72x1u2ay":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/107/1077T32_728d9c0a-61e2-4685-b283-a8d3a3b6d30c@4x_637968748389804992.png","407anq9lkclr":"https://static.grainger.com/rp/s/is/image/Grainger/5P558_AS02?$adapimg$&hei=300&wid=300","iw2s57fe3qda":"https://static.grainger.com/rp/s/is/image/Grainger/31A952_AS02?$adapimg$&hei=300&wid=300","ncsqhqrn3cw4":"https://static.grainger.com/rp/s/is/image/Grainger/31A986_AS01?$adapimg$&hei=300&wid=300","nxb6wejni1gd":"https://m.media-amazon.com/images/I/71ojojJITaS._AC_SL400_.jpg","q2qmqxlthpbr":"https://m.media-amazon.com/images/I/71LvB6-OpQL._AC_SL400_.jpg","bmqzs49gfa7p":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/912/91268A285_6603186e-65ac-4f7d-8f01-e2366f4493691777398225@4x_gcfi0_1777398229.png","w9mnelunezwq":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/983/98320A145_b7740f1c-c8bf-4330-a12b-b4c0fb39db45@4x_ldawt_1780797509.png","vcraqzx05wq6":"https://m.media-amazon.com/images/I/61F7LcSqEeL._AC_SL400_.jpg","0rt4ajko5nt8":"https://m.media-amazon.com/images/I/6110+8t7pBL._AC_SL400_.jpg","0hh8dfv55d5m":"https://m.media-amazon.com/images/I/81rToy5KRCL._AC_SL400_.jpg","i0w6ekkcg1r6":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/107/1077T15_6ce0a5ab-634a-42e6-8e43-08b87881a294@4x_637968748490119050.png","z3xzt6qlkddi":"https://static.grainger.com/rp/s/is/image/Grainger/44ZF47_GC01?$adapimg$&hei=300&wid=300","frzxt6wijwps":"https://static.grainger.com/rp/s/is/image/Grainger/5P606_AS02?$adapimg$&hei=300&wid=300","ta1d3hnejirs":"https://static.grainger.com/rp/s/is/image/Grainger/5P606_AS02?$adapimg$&hei=300&wid=300","m6lbz9ludmvs":"https://static.grainger.com/rp/s/is/image/Grainger/6KJ36_AS01?$adapimg$&hei=300&wid=300","zba3sgysd09q":"https://static.grainger.com/rp/s/is/image/Grainger/2WJ97_AS01?$adapimg$&hei=300&wid=300","3am68jbtcs83":"https://static.grainger.com/rp/s/is/image/Grainger/2WU89_AS02?$adapimg$&hei=300&wid=300","61tf9a1uzn35":"https://static.grainger.com/rp/s/is/image/Grainger/5P606_AS02?$adapimg$&hei=300&wid=300","5cnqcy4yfevc":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/458/45835K632_d8e4b22d-4688-43ad-b099-ae1dd97a674c@4x_1695156614.png","0jyndif0vje6":"https://static.grainger.com/rp/s/is/image/Grainger/5P605_AS02?$adapimg$&hei=300&wid=300","eoz3udxqv8g3":"https://static.grainger.com/rp/s/is/image/Grainger/5P507_AS012__VQP4_v1?$adapimg$&hei=300&wid=300","nee0056juytb":"https://static.grainger.com/rp/s/is/image/Grainger/5P605_AS02?$adapimg$&hei=300&wid=300","8nrkx0lbuq52":"https://static.grainger.com/rp/s/is/image/Grainger/5P457_AS02?$adapimg$&hei=300&wid=300","wskcp5jxu5uq":"https://static.grainger.com/rp/s/is/image/Grainger/2WU36_AS01?$adapimg$&hei=300&wid=300","er40dzkzske5":"https://static.grainger.com/rp/s/is/image/Grainger/5CGU5_AS01?$adapimg$&hei=300&wid=300","7l14cpwyedqj":"https://m.media-amazon.com/images/I/71QHMz5uUtL._AC_SL400_.jpg","wlf4ivl3e0ep":"https://m.media-amazon.com/images/I/71QHMz5uUtL._AC_SL400_.jpg","i-handles":"https://www.mcmaster.com/mvC/Contents/gfx/ImageCache/195/1950A67_f5cacfad-4246-46e5-b5f3-ae7269a9804f@4x_o7by8_1743082400.png","i-flange12":"https://m.media-amazon.com/images/I/51OH3PtaJPL._AC_SL400_.jpg","i-flange6":"https://m.media-amazon.com/images/I/51TGXHazfGL._AC_SL400_.jpg","i-cap6":"https://jspmanufacturing.com/cdn/shop/products/01_076d6001-9070-47b2-9bdd-8668238a64c8.JPG?v=1571439710&width=400","12e6x964qvvp":"https://images.thdstatic.com/productImages/a7de7b35-68c1-4c6a-8f52-e2fe6741bd49/svn/mr-heater-hvac-replacement-parts-f273655-64_400.jpg","jm6iijun454q":"https://images.thdstatic.com/productImages/27b0ddc9-f3cc-4c92-9ced-245418dcc32a/svn/southland-black-pipe-fittings-583-040hn-64_400.jpg","ixh1fy9c4ik3":"https://images.thdstatic.com/productImages/e97751c2-5a2e-4d72-a31e-7b6d078a1e99/svn/apollo-ball-valves-91clf10301-64_400.jpg","45fak52917om":"https://m.media-amazon.com/images/I/71oomjybNyL._AC_SL400_.jpg","3fvc4x3ti9vs":"https://m.media-amazon.com/images/I/61XS+etv9lL._AC_SL400_.jpg","7i57h3e0gaq8":"https://m.media-amazon.com/images/I/71yzLzgFyuL._AC_SL400_.jpg","o7w6f8h3gds7":"https://m.media-amazon.com/images/I/71WYvk-rfxL._AC_SL400_.jpg","dvgzg3nij35s":"https://m.media-amazon.com/images/I/71o76BnHGVL._AC_SL400_.jpg","hnh8j37nvz00":"https://m.media-amazon.com/images/I/915ER0B4M+L._AC_SL400_.jpg","ov2x4z6zx9dy":"https://static.grainger.com/rp/s/is/image/Grainger/1D313_AS02?$adapimg$&hei=300&wid=300","43rgc3xlxv15":"https://static.grainger.com/rp/s/is/image/Grainger/packard_pmj56_xl_1__VUKX_v2?$adapimg$&hei=300&wid=300","lyfy2kp24cm5":"https://m.media-amazon.com/images/I/71CMG4TZoCL._AC_SL400_.jpg"};
+function itemPicture(it){
+  if(!it) return '';
+  if(typeof it.imageUrl==='string') return it.imageUrl;
+  return ITEM_PICTURES[it.id]||'';
+}
+const PIC_PLACEHOLDER='&#9634;';
+function itemPicHtml(it, cls){
+  const src=itemPicture(it);
+  if(!src) return '<span class="'+cls+' is-empty" aria-hidden="true">'+PIC_PLACEHOLDER+'</span>';
+  return '<span class="'+cls+'"><img src="'+escAttr(src)+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.classList.add(\'is-empty\');this.parentNode.innerHTML=\''+PIC_PLACEHOLDER+'\'"></span>';
+}
+async function imageFileToDataURL(file, maxEdge){
+  const bmp=await createImageBitmap(file);
+  const scale=Math.min(1, maxEdge/Math.max(bmp.width,bmp.height));
+  const c=document.createElement('canvas'); c.width=Math.round(bmp.width*scale); c.height=Math.round(bmp.height*scale);
+  const ctx=c.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,c.width,c.height); ctx.drawImage(bmp,0,0,c.width,c.height);
+  return c.toDataURL('image/jpeg',0.85);
+}
+function openItemPictureModal(it){
+  openModal('Picture — '+it.name,
+    '<p class="note" style="margin-top:0">Paste a link to an image (right-click a product photo → <i>Copy image address</i>), or upload a photo.</p>'+
+    '<label class="note" style="display:block;margin-bottom:4px">Image link</label>'+
+    '<input type="text" id="pic-url" placeholder="https://..." value="'+escAttr(/^data:/.test(itemPicture(it))?'':itemPicture(it))+'" style="width:100%">'+
+    '<div style="margin:12px 0"><label class="btn sm" style="position:relative">Upload a photo…<input type="file" id="pic-file" accept="image/*" style="position:absolute;opacity:0;width:1px;height:1px"></label> <span class="note" id="pic-msg"></span></div>'+
+    '<div class="toolbar" style="justify-content:flex-end;margin:16px 0 0"><button class="btn" id="pic-cancel">Cancel</button><button class="btn accent" id="pic-save">Save picture</button></div>');
+  let uploaded=null;
+  document.getElementById('pic-cancel').addEventListener('click', closeModal);
+  document.getElementById('pic-file').addEventListener('change', async e=>{
+    const f=e.target.files[0]; if(!f) return;
+    const msg=document.getElementById('pic-msg');
+    try{ uploaded=await imageFileToDataURL(f, 400); msg.textContent=f.name+' ready — click Save picture.'; }
+    catch(err){ msg.textContent='That photo could not be opened. Try a JPG or PNG.'; }
+  });
+  document.getElementById('pic-save').addEventListener('click',()=>{
+    const url=document.getElementById('pic-url').value.trim();
+    it.imageUrl = uploaded || url;
+    save(); closeModal(); renderItems();
+  });
+}
 /* One item as a small card ("box") — name, stock, price, supplier, reorder badge. */
 function itemTileHtml(it){
   const s=cadenceStatus(it);
@@ -2412,6 +2465,7 @@ function itemTileHtml(it){
   const price=Number(effectiveStandardCost(it))||0;
   const badge = s.cls==='none' ? '' : '<span class="badge '+s.cls+'" title="'+escAttr(s.title||'')+'">'+s.text+'</span>';
   return '<button type="button" class="item-tile'+(selectedItem===it.id?' is-selected':'')+(s.cls==='late'?' is-late':(s.cls==='soon'?' is-soon':''))+'" data-id="'+it.id+'">'+
+    itemPicHtml(it,'it-pic')+
     '<span class="it-name">'+escAttr(it.name)+'</span>'+
     '<span class="it-stock"><b class="it-onhand">'+fmtQty(Number(it.onHand)||0)+'</b> '+escAttr(it.uom||'ea')+' on hand</span>'+
     '<span class="it-meta"><span class="it-price mono'+(price?'':' is-empty')+'">'+(price?'$'+price.toFixed(2):'No price')+'</span><span class="it-sup">'+(supplier?escAttr(supplier.name):'No supplier')+'</span></span>'+
@@ -2603,6 +2657,9 @@ function renderItemCard(it){
   return '<div class="detail-drawer item-card item-panel" data-id="'+it.id+'">'+
     '<div class="detail-drawer-head"><div><h2>'+escAttr(it.name)+'</h2><div class="sub">'+escAttr(it.itemGroup||'Uncategorized')+' · '+statusHtml+'</div></div>'+
     '<div class="row-actions no-print"><button class="btn sm item-history-btn">Order history</button><button class="btn sm danger del-item">Delete</button><button type="button" class="detail-drawer-close item-detail-close" title="Close">✕</button></div></div>'+
+    '<div class="item-photo">'+itemPicHtml(it,'ip-box')+
+      '<div class="ip-actions no-print"><button class="btn sm item-pic-change">'+(itemPicture(it)?'Change picture':'+ Add picture')+'</button>'+
+      (itemPicture(it)?'<button class="btn sm subtle item-pic-remove">Remove picture</button>':'')+'</div></div>'+
     '<div class="item-stats">'+
       '<div class="item-stat"><label>On hand ('+escAttr(it.uom||'ea')+')</label><input class="f-onhand num" type="number" value="'+(Number(it.onHand)||0)+'"><div class="item-asof" title="When this quantity was last counted — inventory is not live">as of <input type="date" class="f-onhandasof" value="'+(it.onHandAsOf||'')+'"></div></div>'+
       '<div class="item-stat"><label>Price (each)</label><div class="money-wrap"><span>$</span><input class="f-pricespot num" type="number" step="0.01" min="0" placeholder="0.00" value="'+(Number(it.standardCost)>0?Number(it.standardCost).toFixed(2):'')+'"></div></div>'+
@@ -2658,6 +2715,8 @@ function wireItemCard(){
     card.querySelector('.f-lastqty').addEventListener('change',e=>{ it.lastPurchaseQty=e.target.value===''?null:(Number(e.target.value)||0); save(); });
     card.querySelector('.f-cadence').addEventListener('change',e=>{ it.reorderCadenceDays=e.target.value===''?null:(Number(e.target.value)||0); save(); renderItems(); });
     card.querySelector('.f-itemnotes').addEventListener('change',e=>{ it.notes=e.target.value; save(); });
+    const picChange=card.querySelector('.item-pic-change'); if(picChange) picChange.addEventListener('click',()=>openItemPictureModal(it));
+    const picRemove=card.querySelector('.item-pic-remove'); if(picRemove) picRemove.addEventListener('click',()=>{ it.imageUrl=''; save(); renderItems(); });
     const histBtn=card.querySelector('.item-history-btn');
     if(histBtn) histBtn.addEventListener('click',()=>{
       const rows=orderHistoryFor(it.id);
