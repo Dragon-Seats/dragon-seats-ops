@@ -544,6 +544,84 @@ button.doc-chip:hover{border-color:var(--graphite)}
 .ir-options input{min-height:0}
 .ir-drive{margin-top:10px;padding:8px 10px;background:var(--steel-soft);border-radius:8px;word-break:break-all}
 .callout.green-callout{background:var(--green-tint);border-color:#bfe0c9;color:#185c2f}
+/* ---- Settings screen ---- */
+.set-layout{display:grid;grid-template-columns:232px minmax(0,1fr);gap:40px;align-items:start;max-width:1080px;margin:8px auto 48px}
+.set-nav{position:sticky;top:0;display:flex;flex-direction:column;gap:2px}
+.set-search{flex:none;min-width:0;margin-bottom:10px}
+.set-search input{width:100%}
+.set-nav-label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--steel);padding:16px 12px 6px}
+.set-nav-label:first-of-type{padding-top:8px}
+.set-nav-item{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;color:var(--graphite);border:1px solid transparent}
+.set-nav-item:hover{background:var(--steel-soft);color:var(--ink)}
+.set-nav-item:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.set-nav-item.active{background:var(--card);color:var(--ink);font-weight:600;box-shadow:inset 2.5px 0 0 var(--red),var(--shadow-sm);border:1px solid var(--line)}
+.set-nav-badge{font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:600;background:var(--amber-tint);color:var(--amber-tint-text);border:1px solid var(--amber-tint-border);border-radius:9px;padding:0 7px;line-height:17px}
+.set-main{min-width:0}
+.set-section-head{padding-bottom:18px;margin-bottom:24px;border-bottom:1px solid var(--line)}
+.set-section-head h2{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em}
+.set-section-head p{margin:6px 0 0;color:var(--steel);font-size:13px;line-height:1.5;max-width:620px}
+.set-results-head{font-size:12.5px;color:var(--steel);margin-bottom:16px}
+.set-main.searching .set-section:not(.hidden) ~ .set-section:not(.hidden){margin-top:40px}
+.set-group{margin-bottom:28px}
+.set-group-head{margin-bottom:10px}
+.set-group-head h3{margin:0;font-size:14.5px;font-weight:600}
+.set-group-head p{margin:4px 0 0;color:var(--steel);font-size:12.5px;line-height:1.5;max-width:640px}
+.set-group-body{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 20px;border-top:1px solid var(--line)}
+.set-group-body > .set-row:first-child,.set-group-body > .set-row.hidden:first-child + .set-row{border-top:0}
+.set-row-text{min-width:0;flex:1}
+.set-label{font-size:13.5px;font-weight:600;color:var(--ink);display:flex;align-items:center;gap:8px}
+.set-desc{font-size:12.5px;color:var(--steel);line-height:1.5;margin-top:3px;max-width:600px}
+.set-control{flex:none;display:flex;align-items:center;gap:12px}
+.set-value{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--ink)}
+.set-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;white-space:nowrap}
+.set-status::before{content:'';width:7px;height:7px;border-radius:50%;background:currentColor}
+.set-status.ok{color:var(--green)} .set-status.warn{color:var(--amber)} .set-status.bad{color:var(--red)} .set-status.muted{color:var(--steel)}
+.set-count{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;background:var(--amber-tint);color:var(--amber-tint-text);border-radius:9px;padding:0 7px;line-height:18px}
+.set-row-warn{background:var(--amber-tint)}
+.set-row-issue{align-items:flex-start}
+.set-issues{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:4px}
+.set-issues li{font-size:13px;color:var(--ink);padding:6px 10px;background:var(--paper);border-radius:var(--radius-sm);display:flex;justify-content:space-between;gap:12px}
+.set-issues li span{color:var(--steel);font-size:12px}
+/* editable lists */
+.set-row-block{display:block;padding:0}
+.set-list{list-style:none;margin:0;padding:0}
+.set-list-item{display:flex;align-items:center;gap:12px;padding:10px 12px 10px 20px;border-bottom:1px solid var(--line);min-height:46px}
+.set-list-item:hover{background:#fbfaf9}
+.set-list-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--steel);width:18px;height:18px;border-radius:50%;background:var(--steel-soft);display:inline-flex;align-items:center;justify-content:center;flex:none}
+.set-list-name{font-size:13.5px;font-weight:500}
+.set-tag{font-size:11px;font-weight:600;color:var(--green);background:var(--green-tint);border-radius:9px;padding:1px 8px}
+.set-list-meta{margin-left:auto;font-size:12px;color:var(--steel);white-space:nowrap}
+.set-list-empty{padding:16px 20px;color:var(--steel);font-size:13px;border-bottom:1px solid var(--line)}
+.set-icon-btn{all:unset;cursor:pointer;width:28px;height:28px;border-radius:var(--radius-sm);display:inline-flex;align-items:center;justify-content:center;font-size:18px;line-height:1;color:var(--steel);flex:none}
+.set-icon-btn:hover{background:var(--red-tint);color:var(--red)}
+.set-icon-btn:focus-visible{outline:2px solid var(--red)}
+.set-list-add{display:flex;gap:8px;padding:12px 20px;background:var(--paper)}
+.set-list-add input{flex:1;max-width:320px;background:#fff}
+/* stats */
+.set-stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0}
+.set-stats div{padding:14px 20px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.set-stats div:nth-child(5n){border-right:0}
+.set-stats div:nth-last-child(-n+5){border-bottom:0}
+.set-stats dt{font-size:11.5px;color:var(--steel)}
+.set-stats dd{margin:4px 0 0;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600}
+.set-group-danger .set-group-head h3{color:var(--red-dark)}
+.set-group-danger .set-group-body{border-color:var(--red-tint-border)}
+.set-empty{padding:48px 0;text-align:center;color:var(--steel)}
+@media (max-width:900px){
+  .set-layout{grid-template-columns:1fr;gap:20px}
+  .set-nav{position:static;flex-direction:row;flex-wrap:wrap;gap:6px}
+  .set-search{flex:1 1 100%}
+  .set-nav-label{display:none}
+  .set-nav-item{border:1px solid var(--line);background:var(--card)}
+  .set-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .set-stats div{border-right:1px solid var(--line)!important;border-bottom:1px solid var(--line)!important}
+}
+@media (max-width:600px){
+  .set-row{flex-direction:column;align-items:flex-start;gap:12px;padding:14px 16px}
+  .set-row-block{padding:0}
+  .set-list-add{flex-wrap:wrap}
+}
 .settings-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 0;border-bottom:1px solid var(--line)}
 .settings-row:last-child{border-bottom:0}
 @media (max-width:900px){.intake-review{grid-template-columns:1fr}.ir-preview{position:static;height:300px}}
@@ -2251,6 +2329,218 @@ window.MFG_API={ensure,counts,renderBuilds,renderRefurbs,importHub,settingsCardH
 })();
 </script>
 <script>
+/* ---------------- cloud sync (Supabase) ----------------
+   All app data lives in one row (id 'main') of the Supabase table public.app_state.
+   Every signed-in team member reads and writes that same row.
+   - Sign-in: email + password (users are added in Supabase › Authentication › Users).
+   - Saves are batched (1.5s) and use a version number, so if someone else saved first
+     you get asked what to do instead of silently overwriting their work.
+   - The browser's own copy (IndexedDB) is still written on every save as a local cache.
+   - If the cloud row doesn't exist yet, the first save uploads this browser's data. */
+window.Cloud=(function(){
+  const URL_BASE='https://bgbuzqsuxxsnuctstdck.supabase.co';
+  const API_KEY='sb_publishable_OEiYwZfoTfyGH9lYshvHmg_72Z5Zq3m';
+  const TABLE='app_state';
+  const ROW_ID='main';
+  const SESSION_KEY='dragon-seats-ops-session';
+  const PUSH_DELAY=1500;
+
+  let session=null;          // {access_token, refresh_token, expires_at, email}
+  let version=null;          // version of the cloud row we last loaded/saved (null = no row yet)
+  let initialData=null;      // data text fetched at startup
+  let pending=null;          // latest data text waiting to be pushed
+  let pushTimer=null, pushing=false, blocked=false;
+
+  function loadSession(){ try{ return JSON.parse(localStorage.getItem(SESSION_KEY))||null; }catch(e){ return null; } }
+  function storeSession(s){ session=s; try{ if(s) localStorage.setItem(SESSION_KEY, JSON.stringify(s)); else localStorage.removeItem(SESSION_KEY); }catch(e){} }
+  function fromAuthResponse(j){
+    return {access_token:j.access_token, refresh_token:j.refresh_token,
+      expires_at: j.expires_at || (Math.floor(Date.now()/1000)+(j.expires_in||3600)),
+      email: (j.user && j.user.email) || (session && session.email) || ''};
+  }
+  async function authCall(grant, body){
+    const r=await fetch(URL_BASE+'/auth/v1/token?grant_type='+grant,{method:'POST',
+      headers:{'apikey':API_KEY,'Content-Type':'application/json'}, body:JSON.stringify(body)});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error_description||j.msg||j.message||('Sign-in failed ('+r.status+')'));
+    return fromAuthResponse(j);
+  }
+  async function refresh(){
+    if(!session || !session.refresh_token) throw new Error('not-signed-in');
+    storeSession(await authCall('refresh_token',{refresh_token:session.refresh_token}));
+  }
+  async function token(){
+    if(!session) throw new Error('not-signed-in');
+    if(session.expires_at - 60 < Date.now()/1000) await refresh();
+    return session.access_token;
+  }
+  // REST call with one automatic token refresh on 401
+  async function rest(path, opts, retried){
+    const t=await token();
+    const r=await fetch(URL_BASE+'/rest/v1/'+path, Object.assign({}, opts, {headers:Object.assign({
+      'apikey':API_KEY,'Authorization':'Bearer '+t,'Content-Type':'application/json'}, (opts&&opts.headers)||{})}));
+    if(r.status===401 && !retried){ await refresh(); return rest(path, opts, true); }
+    return r;
+  }
+  async function errText(r){ const t=await r.text().catch(()=> ''); try{ const j=JSON.parse(t); return j.message||t; }catch(e){ return t||('HTTP '+r.status); } }
+
+  async function fetchRow(cols){
+    const r=await rest(TABLE+'?id=eq.'+ROW_ID+'&select='+cols,{method:'GET'});
+    if(!r.ok) throw new Error('Could not read data from the cloud: '+await errText(r));
+    const rows=await r.json();
+    return rows[0]||null;
+  }
+
+  /* ---- UI ---- */
+  function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+  function overlay(html){
+    let o=document.getElementById('cloud-overlay');
+    if(!o){ o=document.createElement('div'); o.id='cloud-overlay';
+      o.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:var(--bg,#f4f5f7);padding:16px';
+      document.body.appendChild(o); }
+    o.innerHTML='<div style="background:var(--card,#fff);color:var(--ink,#111);border:1px solid var(--line,#ddd);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);padding:28px;width:100%;max-width:380px;font-size:14px">'+html+'</div>';
+    return o;
+  }
+  function hideOverlay(){ const o=document.getElementById('cloud-overlay'); if(o) o.remove(); }
+  const inputCss='width:100%;box-sizing:border-box;height:38px;padding:0 10px;border:1px solid var(--line,#ccc);border-radius:8px;font:inherit;margin:4px 0 12px;background:var(--card,#fff);color:inherit';
+
+  function showLogin(msg){
+    return new Promise(resolve=>{
+      const o=overlay('<h2 style="margin:0 0 4px;font-size:20px">Dragon Seats Ops</h2>'+
+        '<p style="margin:0 0 18px;color:var(--ink-soft,#666)">Sign in to open the shared team data.</p>'+
+        '<form id="cloud-login"><label>Email<input id="cloud-email" type="email" autocomplete="username" required style="'+inputCss+'"></label>'+
+        '<label>Password<input id="cloud-pass" type="password" autocomplete="current-password" required style="'+inputCss+'"></label>'+
+        '<div id="cloud-err" style="color:var(--red,#b00020);min-height:18px;margin-bottom:8px">'+esc(msg||'')+'</div>'+
+        '<button class="btn accent" type="submit" style="width:100%">Sign in</button></form>'+
+        '<p style="margin:14px 0 0;font-size:12px;color:var(--ink-soft,#666)">No account yet? Ask John to add you.</p>');
+      const em=o.querySelector('#cloud-email'); const last=(loadSession()||{}).email||localStorage.getItem(SESSION_KEY+'-email')||'';
+      if(last) em.value=last;
+      (last?o.querySelector('#cloud-pass'):em).focus();
+      o.querySelector('#cloud-login').addEventListener('submit', async e=>{
+        e.preventDefault();
+        const btn=o.querySelector('button[type=submit]'); btn.disabled=true; btn.textContent='Signing in…';
+        try{
+          const s=await authCall('password',{email:em.value.trim(), password:o.querySelector('#cloud-pass').value});
+          storeSession(s); try{ localStorage.setItem(SESSION_KEY+'-email', s.email); }catch(_){}
+          resolve();
+        }catch(err){ o.querySelector('#cloud-err').textContent=err.message; btn.disabled=false; btn.textContent='Sign in'; }
+      });
+    });
+  }
+  function showError(msg){
+    return new Promise(resolve=>{
+      const o=overlay('<h2 style="margin:0 0 8px;font-size:18px">Can\'t reach the cloud database</h2>'+
+        '<p style="margin:0 0 6px">'+esc(msg)+'</p>'+
+        '<p style="margin:0 0 16px;color:var(--ink-soft,#666);font-size:12.5px">Check your internet connection. If the Supabase project was paused, resume it from the Supabase dashboard, then try again.</p>'+
+        '<div style="display:flex;gap:8px"><button class="btn accent" id="cloud-retry">Try again</button><button class="btn" id="cloud-signout">Sign out</button></div>');
+      o.querySelector('#cloud-retry').addEventListener('click',()=>resolve('retry'));
+      o.querySelector('#cloud-signout').addEventListener('click',()=>{ storeSession(null); resolve('retry'); });
+    });
+  }
+  function stamp(text, bad){
+    const el=document.getElementById('savestamp'); if(!el) return;
+    el.textContent=text; el.style.color=bad?'var(--red,#b00020)':'';
+  }
+  function renderAccount(){
+    let a=document.getElementById('cloud-account');
+    const foot=document.getElementById('savestamp');
+    if(!foot) return;
+    if(!a){ a=document.createElement('div'); a.id='cloud-account'; a.className='sb-foot'; a.style.cssText='padding-top:0;font-size:11.5px;opacity:.85'; foot.parentNode.insertBefore(a, foot.nextSibling); }
+    a.innerHTML=esc(session?session.email:'')+' · <a href="#" id="cloud-signout-link" style="color:inherit">Sign out</a>';
+    a.querySelector('#cloud-signout-link').addEventListener('click', e=>{
+      e.preventDefault();
+      if(pending||pushing){ alert('Still saving your last change — try again in a moment.'); return; }
+      storeSession(null); location.reload();
+    });
+  }
+  function conflictModal(row){
+    blocked=true;
+    const who=row&&row.updated_by?row.updated_by:'someone else';
+    const when=row&&row.updated_at?new Date(row.updated_at).toLocaleString():'';
+    const o=overlay('<h2 style="margin:0 0 8px;font-size:18px">Someone else saved changes</h2>'+
+      '<p style="margin:0 0 10px">'+esc(who)+' saved newer data'+(when?' at '+esc(when):'')+' while you were working.</p>'+
+      '<p style="margin:0 0 16px;color:var(--ink-soft,#666);font-size:12.5px"><b>Load their version</b> reloads the latest data (your most recent change here will need to be redone).<br><b>Keep mine</b> saves your version over theirs (their change will be lost, but it stays in the cloud history).</p>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn accent" id="cloud-reload">Load their version</button><button class="btn" id="cloud-force">Keep mine</button></div>');
+    o.querySelector('#cloud-reload').addEventListener('click',()=>{ pending=null; location.reload(); });
+    o.querySelector('#cloud-force').addEventListener('click',()=>{ hideOverlay(); blocked=false; version=row?row.version:version; schedule(0); });
+  }
+
+  /* ---- push ---- */
+  function schedule(delay){ clearTimeout(pushTimer); pushTimer=setTimeout(push, delay==null?PUSH_DELAY:delay); }
+  async function push(){
+    if(pushing||blocked||pending==null) return;
+    pushing=true;
+    const data=pending; pending=null;
+    stamp('saving to cloud…');
+    try{
+      const body={data, updated_at:new Date().toISOString(), updated_by:session&&session.email||null};
+      let r, rows;
+      if(version==null){
+        r=await rest(TABLE,{method:'POST',headers:{'Prefer':'return=representation'},body:JSON.stringify(Object.assign({id:ROW_ID,version:1},body))});
+        if(r.status===409){ pending=pending==null?data:pending; pushing=false; conflictModal(await fetchRow('version,updated_by,updated_at')); return; }
+      } else {
+        r=await rest(TABLE+'?id=eq.'+ROW_ID+'&version=eq.'+version+'&select=version',{method:'PATCH',headers:{'Prefer':'return=representation'},body:JSON.stringify(Object.assign({version:version+1},body))});
+      }
+      if(!r.ok) throw new Error(await errText(r));
+      rows=await r.json();
+      if(!rows.length){ // version didn't match: someone else saved first
+        pending=pending==null?data:pending; pushing=false;
+        conflictModal(await fetchRow('version,updated_by,updated_at')); return;
+      }
+      version=rows[0].version;
+      stamp('saved to cloud '+new Date().toLocaleTimeString());
+    }catch(e){
+      console.error('[dragon-seats] cloud save failed', e);
+      if(pending==null) pending=data;
+      stamp('CLOUD SAVE FAILED — retrying…', true);
+      pushing=false; schedule(10000); return;
+    }
+    pushing=false;
+    if(pending!=null) schedule(300);
+  }
+
+  /* ---- public ---- */
+  async function start(){
+    session=loadSession();
+    for(;;){
+      if(!session) await showLogin();
+      try{
+        const row=await fetchRow('data,version');
+        initialData=row?row.data:null; version=row?row.version:null;
+        hideOverlay(); renderAccount();
+        return;
+      }catch(e){
+        if(String(e.message).indexOf('not-signed-in')>=0 || /JWT|token/i.test(e.message)){ storeSession(null); continue; }
+        await showError(e.message);
+        session=loadSession();
+      }
+    }
+  }
+  // Returns cloud data, or null if the cloud row doesn't exist yet (caller falls back to local data,
+  // which then gets uploaded on the first save).
+  function initial(){ const d=initialData; initialData=null; return d; }
+  function queue(data){ pending=data; if(!blocked) schedule(); }
+
+  // When the tab regains focus, check whether a teammate saved newer data.
+  document.addEventListener('visibilitychange', async ()=>{
+    if(document.visibilityState!=='visible' || !session || blocked || pushing || pending!=null || version==null) return;
+    try{
+      const row=await fetchRow('version,updated_by,updated_at');
+      if(row && row.version>version && !pending && !pushing){
+        blocked=true;
+        const o=overlay('<h2 style="margin:0 0 8px;font-size:18px">Newer data available</h2>'+
+          '<p style="margin:0 0 16px">'+esc(row.updated_by||'A teammate')+' saved changes'+(row.updated_at?' at '+esc(new Date(row.updated_at).toLocaleString()):'')+'.</p>'+
+          '<button class="btn accent" id="cloud-reload2">Load latest</button>');
+        o.querySelector('#cloud-reload2').addEventListener('click',()=>location.reload());
+      }
+    }catch(e){ /* offline — ignore, the next save will surface problems */ }
+  });
+  window.addEventListener('beforeunload', e=>{ if(pending!=null||pushing){ e.preventDefault(); e.returnValue=''; } });
+
+  return {start, initial, queue};
+})();
+</script>
+<script>
 
 /* ---------------- storage & utils ---------------- */
 const KEY='dragon-seats-mrp-v1';
@@ -2315,6 +2605,12 @@ async function migrateFromLocalStorageIfNeeded(){
 }
 async function storeGet(){
   if(HAS_CLAUDE_STORE){ const r=await window.storage.get(KEY); return r&&r.value?r.value:null; }
+  if(window.Cloud){
+    const d=Cloud.initial();
+    if(d!=null){ try{ await idbSet(KEY, d); }catch(e){} return d; } // cloud copy wins; cache it locally
+    // no cloud row yet: fall through to this browser's data and upload it right away (see load())
+    window._cloudSeed=true;
+  }
   try{
     await migrateFromLocalStorageIfNeeded();
     const v=await idbGet(KEY);
@@ -2326,6 +2622,11 @@ async function storeGet(){
 }
 async function storeSet(v){
   if(HAS_CLAUDE_STORE){ await window.storage.set(KEY,v); return; }
+  if(window.Cloud){
+    Cloud.queue(v);
+    try{ await idbSet(KEY, v); }catch(e){ console.warn('[dragon-seats] local cache write failed (cloud save still queued)', e); }
+    return;
+  }
   try{
     await idbSet(KEY, v);
   }catch(e){
@@ -2729,7 +3030,7 @@ async function load(){
     try{ DB=migrateMfgHadlock(migrateToV2(JSON.parse(raw))); migrated=true; }catch(e){ DB=sample(); }
   } else { DB=sample(); }
   ensureShape();
-  if(migrated) await save(); // persist the one-time MFG/Hadlock migration so it doesn't need to re-run
+  if(migrated && (window._cloudSeed || JSON.stringify(DB)!==raw)) await save(); // persist the one-time MFG/Hadlock migration (only if it actually changed something, so opening the app doesn't create a cloud save)
 }
 async function save(){
   ensureShape();
@@ -2737,7 +3038,7 @@ async function save(){
   const el=document.getElementById('savestamp');
   try{
     await storeSet(json);
-    if(el) el.textContent='saved '+new Date().toLocaleTimeString();
+    if(el) el.textContent=window.Cloud?'saving…':'saved '+new Date().toLocaleTimeString();
   }catch(e){
     console.error('[dragon-seats] save failed', e);
     if(el) el.textContent='SAVE FAILED \u2014 data may not have persisted (see console)';
@@ -3048,7 +3349,7 @@ const TAB_LABELS={
   shipments:['Shipments','Inbound deliveries, drop-offs to manufacturers and shipments to clients'],
   mfgbuilds:['New Builds','Purchase orders and bench pickups'],
   mfgrefurb:['Refurb Jobs','Refurb sets \u2014 close each set out when it\u2019s dropped off'],
-  settings:['Settings','Data management and configuration']
+  settings:['Settings','Account, documents, lists and data']
 };
 /* Sub-tab labels for the merged Purchase Orders / Quotes / Receipts page. */
 const DOC_SUBTAB_LABELS={
@@ -6888,45 +7189,6 @@ function openApiKeyModal(){
     setApiKey(prev);
   });
 }
-function docsSettingsCardHtml(){
-  const inApp=attachmentsInApp();
-  const mb=(inApp.reduce((s,[,,d])=>s+String(d.dataUrl||'').length,0)*0.75/1e6);
-  return '<div class="card"><div class="card-head"><h3>Documents</h3></div><div class="card-body">'+
-    '<div class="settings-row"><div><b>Google Drive folder</b><div class="note">'+
-      (!docsRootInfo.supported ? 'Needs Chrome or Microsoft Edge. Files are kept in the app until then.'
-        : docsRootInfo.name ? 'Saving to <b>'+escAttr(docsRootInfo.name)+'</b> → Receipts / Quotes / Purchase Orders / Shipments → year → supplier.'
-        : 'Not connected. Pick a folder inside your Google Drive (for example My Drive › My Projects › DS MRP System › Documents).')+
-    '</div></div>'+(docsRootInfo.supported?'<button class="btn" id="set-drive">'+(docsRootInfo.name?'Change folder':'Choose folder')+'</button>':'')+'</div>'+
-    (inApp.length?'<div class="settings-row"><div><b>'+inApp.length+' older file'+(inApp.length===1?'':'s')+' still stored in the app</b><div class="note">About '+mb.toFixed(1)+' MB. Moving them into the Drive folder keeps the app fast.</div></div><button class="btn" id="move-to-drive" '+(docsRootInfo.name?'':'disabled')+'>Move to Drive</button></div>':'')+
-    '<div class="settings-row"><div><b>Auto-read documents</b><div class="note">'+(getApiKey()?'On — dropped documents are read automatically.':'Off — add an Anthropic API key to have receipts and quotes filled in for you.')+'</div></div><button class="btn" id="set-key">'+(getApiKey()?'Change key':'Add API key')+'</button></div>'+
-  '</div></div>';
-}
-function wireDocsSettingsCard(){
-  const d=document.getElementById('set-drive'); if(d) d.addEventListener('click', async()=>{ const h=await chooseDocsRoot(); if(h) renderSettings(); });
-  const m=document.getElementById('move-to-drive'); if(m) m.addEventListener('click', ()=>{ m.disabled=true; m.textContent='Moving…'; moveAttachmentsToDrive(); });
-  const k=document.getElementById('set-key'); if(k) k.addEventListener('click', openApiKeyModal);
-}
-
-/* ---------------- Settings tab ---------------- */
-function renderStatusList(){
-  const el=document.getElementById('po-status-list');
-  if(!el) return;
-  el.innerHTML = DB.lists.poStatus.map((s,i)=>'<span class="chip">'+escAttr(s)+' <button class="btn sm danger status-remove" data-i="'+i+'" style="padding:1px 6px;margin-left:4px">x</button></span>').join(' ');
-  el.querySelectorAll('.status-remove').forEach(b=>b.addEventListener('click',()=>{
-    if(DB.lists.poStatus.length<=1){ alertModal('Keep at least one status.'); return; }
-    DB.lists.poStatus.splice(Number(b.dataset.i),1); save(); renderStatusList();
-  }));
-}
-function renderItemGroupList(){
-  const el=document.getElementById('item-group-list');
-  if(!el) return;
-  el.innerHTML = DB.lists.itemGroups.map((g,i)=>'<span class="chip">'+escAttr(g)+' <button class="btn sm danger item-group-remove" data-i="'+i+'" style="padding:1px 6px;margin-left:4px">x</button></span>').join(' ') || '<p class="note">No categories defined yet — everything shows under "Uncategorized" until you add some.</p>';
-  el.querySelectorAll('.item-group-remove').forEach(b=>b.addEventListener('click',()=>{
-    confirmModal('Remove this category? Items already set to it will show under "Uncategorized" instead — nothing is deleted.', ()=>{
-      DB.lists.itemGroups.splice(Number(b.dataset.i),1); save(); renderItemGroupList();
-    }, {okLabel:'Remove'});
-  }));
-}
 function findDuplicateItems(){
   const nameGroups={};
   DB.items.forEach(it=>{
@@ -6956,95 +7218,292 @@ function findDuplicateItems(){
 
   return {nameDupes, mixedUsage, unpricedAssemblies};
 }
-function renderDataAudit(){
-  const {nameDupes, mixedUsage, unpricedAssemblies}=findDuplicateItems();
-  if(!nameDupes.length && !mixedUsage.length && !unpricedAssemblies.length){
-    return '';
-  }
-  let html='';
-  if(unpricedAssemblies.length){
-    html+='<div style="margin-bottom:12px"><b>Sub-assembly not grouped as a bundle</b> ('+unpricedAssemblies.length+')'+
-      '<ul style="margin:6px 0 0 18px;padding:0">'+unpricedAssemblies.map(x=>
-        '<li style="margin-bottom:2px">'+escAttr(x.item.name)+' — '+x.childCount+' component'+(x.childCount>1?'s':'')+', no price of its own</li>'
-      ).join('')+'</ul></div>';
-  }
-  if(nameDupes.length){
-    html+='<div style="margin-bottom:12px"><b>Same name, multiple entries</b> ('+nameDupes.length+')'+
-      '<ul style="margin:6px 0 0 18px;padding:0">'+nameDupes.map(g=>
-        '<li style="margin-bottom:2px">'+escAttr(g[0].name)+' — '+g.length+' entries</li>'
-      ).join('')+'</ul></div>';
-  }
-  if(mixedUsage.length){
-    html+='<div><b>Bundled in one place, listed separately in another</b> ('+mixedUsage.length+')'+
-      '<ul style="margin:6px 0 0 18px;padding:0">'+mixedUsage.map(x=>
-        '<li style="margin-bottom:2px">'+escAttr(x.item.name)+'</li>'
-      ).join('')+'</ul></div>';
-  }
-  html+=helpNote('What do these mean?',
-    '<b>Sub-assembly not grouped as a bundle</b> — this item has its own recipe (so it\'s a sub-assembly, not a raw part) but no price of its own (no Standard Cost, pack price, price breaks, PO/receipt history, or link cost). So instead of showing as one bundle-priced line, every component underneath needs its own price. If this should be one bundle price, open it on the Items tab and set a Standard Cost, pack price, or price breaks directly on it.<br><br>'+
-    '<b>Same name, multiple entries</b> — these look like duplicates. Pick which one to keep, move any real data (on-hand, notes, links) onto it, then delete the rest from the Items tab.<br><br>'+
-    '<b>Bundled in one place, listed separately in another</b> — this part is already covered by a bundle price under one product, but also shows up needing its own price under another. If it\'s really the same physical part, remove the separate line or fold it into the bundle; if it\'s legitimately priced separately for that other product, no action needed.'
-  );
-  return html;
+/* ---------------- Settings tab ----------------
+   Layout: a section menu on the left (grouped Workspace / Lists / Data) and one section
+   showing at a time on the right. Each section is made of titled groups; each group is a
+   stack of rows (label + description on the left, control on the right). The search box
+   filters rows across every section. The open section is a per-browser UI preference
+   (localStorage), not app data. */
+const SETTINGS_SEC_KEY='dragon-seats-mrp-settings-section';
+const SETTINGS_SECTIONS=[
+  {group:'Workspace', key:'account',  label:'Account & sync',     title:'Account & sync',     desc:'Who is signed in and how your work is saved to the shared team database.'},
+  {group:'Workspace', key:'documents',label:'Documents & files',  title:'Documents & files',  desc:'Where attached receipts, quotes and purchase orders are saved, and how they are read.'},
+  {group:'Lists',     key:'purchasing',label:'Purchasing',        title:'Purchasing',         desc:'The status steps a purchase order moves through.'},
+  {group:'Lists',     key:'catalog',  label:'Catalog',            title:'Catalog',            desc:'Categories used to group parts on the Items tab.'},
+  {group:'Lists',     key:'manufacturing',label:'Manufacturing',  title:'Manufacturing',      desc:'Locations for New Builds and Refurb Jobs, and importing from the DS Asset Hub.'},
+  {group:'Data',      key:'health',   label:'Data health',        title:'Data health',        desc:'Possible problems in the catalog that can throw off costs and planning.'},
+  {group:'Data',      key:'data',     label:'Backup & data',      title:'Backup & data',      desc:'What is stored, backups, restoring, and resetting.'}
+];
+let settingsSection=(function(){ try{ const s=localStorage.getItem(SETTINGS_SEC_KEY); return SETTINGS_SECTIONS.some(x=>x.key===s)?s:'account'; }catch(e){ return 'account'; } })();
+let settingsQuery='';
+
+/* ---- small builders ---- */
+function setRow(label, desc, controlHtml, opts){
+  opts=opts||{};
+  return '<div class="set-row'+(opts.cls?' '+opts.cls:'')+'" data-search="'+escAttr((label+' '+(opts.keywords||'')+' '+String(desc||'').replace(/<[^>]+>/g,'')).toLowerCase())+'">'+
+    '<div class="set-row-text"><div class="set-label">'+label+'</div>'+(desc?'<div class="set-desc">'+desc+'</div>':'')+'</div>'+
+    (controlHtml?'<div class="set-control">'+controlHtml+'</div>':'')+
+  '</div>';
 }
+function setGroup(title, desc, rowsHtml, opts){
+  opts=opts||{};
+  return '<section class="set-group'+(opts.cls?' '+opts.cls:'')+'">'+
+    '<header class="set-group-head"><h3>'+title+'</h3>'+(desc?'<p>'+desc+'</p>':'')+'</header>'+
+    '<div class="set-group-body">'+rowsHtml+'</div>'+
+  '</section>';
+}
+function setStatus(kind, text){ return '<span class="set-status '+kind+'">'+text+'</span>'; }
+function plural(n, word){ return n+' '+word+(n===1?'':'s'); }
+
+/* Editable list (PO statuses, item categories, locations).
+   cfg: {id, items:[{name, meta, tag}], placeholder, addLabel, emptyText, keywords} */
+function setListEditor(cfg){
+  const rows=cfg.items.length ? cfg.items.map((it,i)=>
+    '<li class="set-list-item">'+
+      (cfg.numbered?'<span class="set-list-num">'+(i+1)+'</span>':'')+
+      '<span class="set-list-name">'+escAttr(it.name)+'</span>'+
+      (it.tag?'<span class="set-tag">'+escAttr(it.tag)+'</span>':'')+
+      '<span class="set-list-meta">'+(it.meta||'')+'</span>'+
+      '<button class="set-icon-btn" data-list="'+cfg.id+'" data-i="'+i+'" title="Remove '+escAttr(it.name)+'" aria-label="Remove '+escAttr(it.name)+'">&times;</button>'+
+    '</li>').join('') : '<li class="set-list-empty">'+cfg.emptyText+'</li>';
+  return '<div class="set-row set-row-block" data-search="'+escAttr((cfg.keywords+' '+cfg.items.map(i=>i.name).join(' ')).toLowerCase())+'">'+
+    '<ul class="set-list" id="'+cfg.id+'-list">'+rows+'</ul>'+
+    '<div class="set-list-add no-print"><input id="'+cfg.id+'-input" placeholder="'+escAttr(cfg.placeholder)+'" autocomplete="off"><button class="btn" id="'+cfg.id+'-add">'+cfg.addLabel+'</button></div>'+
+  '</div>';
+}
+
+/* ---- sections ---- */
+function settingsAccountHtml(){
+  let email=''; try{ email=(JSON.parse(localStorage.getItem('dragon-seats-ops-session'))||{}).email||''; }catch(e){}
+  const stamp=(document.getElementById('savestamp')||{}).textContent||'';
+  const failing=/fail/i.test(stamp);
+  return setGroup('Signed in', '',
+      setRow('Account', email?escAttr(email):'Not signed in', email?'<button class="btn" id="set-signout">Sign out</button>':'', {keywords:'email user login sign out'})+
+      setRow('Team access', 'Everyone signed in works on the same shared data. Ask John to add a new teammate.', '', {keywords:'users teammates invite'}))+
+    setGroup('Saving', '',
+      setRow('Cloud sync', 'Changes save automatically about a second after you make them. If a teammate saved first, you’ll be asked which version to keep.',
+        setStatus(failing?'bad':'ok', failing?'Not saving':'On'), {keywords:'supabase cloud save sync'})+
+      setRow('Last save', '<span id="set-last-save">'+escAttr(stamp||'Nothing saved yet this session')+'</span>', '', {keywords:'saved time'})+
+      setRow('This browser’s copy', 'A copy is also kept in this browser so the app opens fast. It is replaced by the cloud data each time you sign in.', '', {keywords:'local cache indexeddb offline'}));
+}
+function settingsDocumentsHtml(){
+  const inApp=attachmentsInApp();
+  const mb=(inApp.reduce((s,[,,d])=>s+String(d.dataUrl||'').length,0)*0.75/1e6);
+  const driveDesc=!docsRootInfo.supported ? 'Needs Chrome or Microsoft Edge. Until then, files are kept inside the app.'
+    : docsRootInfo.name ? 'Saving to <b>'+escAttr(docsRootInfo.name)+'</b>, sorted into Receipts / Quotes / Purchase Orders / Shipments › year › supplier.'
+    : 'Pick a folder inside your Google Drive, for example My Drive › My Projects › DS Ops › Documents.';
+  const driveStatus=!docsRootInfo.supported?setStatus('muted','Not available'):docsRootInfo.name?setStatus('ok','Connected'):setStatus('warn','Not connected');
+  return setGroup('Storage', 'Attached files are saved to your Google Drive, not inside the app.',
+      setRow('Google Drive folder', driveDesc, driveStatus+(docsRootInfo.supported?'<button class="btn" id="set-drive">'+(docsRootInfo.name?'Change folder':'Choose folder')+'</button>':''), {keywords:'drive folder google attachments'})+
+      (inApp.length?setRow(plural(inApp.length,'older file')+' still stored in the app', 'About '+mb.toFixed(1)+' MB. Moving them into the Drive folder keeps the app fast.', '<button class="btn" id="move-to-drive" '+(docsRootInfo.name?'':'disabled')+'>Move to Drive</button>', {keywords:'attachments move drive'}):''))+
+    setGroup('Auto-read', 'Fill in receipts and quotes from a dropped PDF or photo.',
+      setRow('Auto-read documents', getApiKey()?'Dropped documents are read automatically using your Anthropic API key. The key stays in this browser only.':'Add an Anthropic API key to have supplier, lines and totals filled in for you. About 1–3 cents per document.',
+        setStatus(getApiKey()?'ok':'muted', getApiKey()?'On':'Off')+'<button class="btn" id="set-key">'+(getApiKey()?'Change key':'Add API key')+'</button>', {keywords:'api key anthropic claude ocr scan'}));
+}
+function settingsPurchasingHtml(){
+  const closed=closedStatusName();
+  const used={}; DB.purchaseOrders.forEach(po=>{ used[po.status]=(used[po.status]||0)+1; });
+  return setGroup('Purchase order statuses', 'In order, from first step to last. <b>'+escAttr(closed)+'</b> closes the PO: receiving a PO sets this status and adds its quantities to stock. New statuses are added just before it.',
+    setListEditor({id:'po-status', numbered:true, keywords:'purchase order status workflow steps',
+      items:DB.lists.poStatus.map(s=>({name:s, tag:s===closed?'Closes PO':'', meta:used[s]?plural(used[s],'PO'):''})),
+      placeholder:'New status name', addLabel:'Add status', emptyText:'No statuses.'}));
+}
+function settingsCatalogHtml(){
+  const used={}; let none=0; DB.items.filter(i=>!i.isProduct).forEach(i=>{ if(i.itemGroup) used[i.itemGroup]=(used[i.itemGroup]||0)+1; else none++; });
+  return setGroup('Item categories', 'Pick one per part on the Items tab to group the list. Parts without one show under “Uncategorized”'+(none?' ('+plural(none,'part')+' right now)':'')+'.',
+    setListEditor({id:'item-group', keywords:'item category group parts',
+      items:DB.lists.itemGroups.map(g=>({name:g, meta:used[g]?plural(used[g],'item'):'Not used'})),
+      placeholder:'New category name', addLabel:'Add category', emptyText:'No categories yet.'}));
+}
+function settingsManufacturingHtml(){
+  const locs=(DB.mfg&&DB.mfg.inv&&DB.mfg.inv.locations)||[];
+  const used={}; if(DB.mfg) [].concat(DB.mfg.newBuilds||[], DB.mfg.refurbs||[]).forEach(r=>{ const l=(r.location||'').trim(); if(l) used[l]=(used[l]||0)+1; });
+  return setGroup('Locations', 'Offered in the location dropdowns on New Builds and Refurb Jobs.',
+      setListEditor({id:'mfg-loc', keywords:'location office warehouse',
+        items:locs.map(l=>({name:l.name, meta:used[l.name]?plural(used[l.name],'record'):'Not used'})),
+        placeholder:'New location name', addLabel:'Add location', emptyText:'No locations yet.'}))+
+    setGroup('Import', '',
+      setRow('Import from DS Asset Hub', 'In the Asset Hub, go to Settings › Export data, then pick that file here. It replaces the New Builds and Refurb Jobs in this app. Items, BOM, POs and shipments are not touched.',
+        '<button class="btn" id="mfg-import-hub">Choose file…</button><input type="file" id="mfg-import-file" accept="application/json,.json" class="hidden">', {keywords:'asset hub import refurb builds'}));
+}
+function settingsHealthIssues(){
+  const {nameDupes, mixedUsage, unpricedAssemblies}=findDuplicateItems();
+  return {nameDupes, mixedUsage, unpricedAssemblies, total:nameDupes.length+mixedUsage.length+unpricedAssemblies.length};
+}
+function settingsHealthHtml(){
+  const h=settingsHealthIssues();
+  if(!h.total) return setGroup('Catalog check', '', setRow('No problems found', 'No duplicate items, and every sub-assembly is priced the way it’s used.', setStatus('ok','All clear'), {keywords:'audit duplicates check'}));
+  const check=(title, desc, list, fmt)=> list.length
+    ? setRow(title+' <span class="set-count">'+list.length+'</span>', desc+'<ul class="set-issues">'+list.map(fmt).join('')+'</ul>', '', {cls:'set-row-issue', keywords:'audit '+list.map(x=>(x.item||x[0]||{}).name||'').join(' ')})
+    : setRow(title, 'None found.', setStatus('ok','OK'), {keywords:'audit'});
+  return setGroup('Catalog check', 'Fix these on the Items tab. Nothing here changes data on its own.',
+    check('Sub-assembly with no price of its own',
+      'Has its own recipe but no Standard Cost, pack price, price breaks or purchase history, so every part under it needs its own price. To price it as one bundle, set a cost on it.',
+      h.unpricedAssemblies, x=>'<li>'+escAttr(x.item.name)+' <span>'+plural(x.childCount,'component')+'</span></li>')+
+    check('Same name, more than one entry',
+      'Looks like duplicates. Keep one, move any real data (on hand, notes, links) onto it, then delete the rest.',
+      h.nameDupes, g=>'<li>'+escAttr(g[0].name)+' <span>'+g.length+' entries</span></li>')+
+    check('Bundled in one product, listed separately in another',
+      'Covered by a bundle price under one product but needs its own price under another. If it’s the same physical part, fold it into the bundle.',
+      h.mixedUsage, x=>'<li>'+escAttr(x.item.name)+'</li>'));
+}
+function settingsDataHtml(){
+  const json=JSON.stringify(DB), mb=json.length/1e6, big=json.length>=SIZE_WARN_THRESHOLD;
+  const m=DB.mfg||{};
+  const stats=[
+    ['Items', DB.items.filter(i=>!i.isProduct).length], ['Products', DB.items.filter(i=>i.isProduct).length],
+    ['Suppliers', (DB.suppliers||[]).length], ['Clients', (DB.clients||[]).length],
+    ['Purchase orders', (DB.purchaseOrders||[]).length], ['Quotes', (DB.quotes||[]).length], ['Receipts', (DB.receipts||[]).length],
+    ['Shipments', (DB.shipments||[]).length], ['New build pickups', (m.newBuilds||[]).length], ['Refurb benches', (m.refurbs||[]).length]
+  ];
+  return setGroup('What’s stored', '',
+      '<div class="set-row set-row-block" data-search="stored counts records size items products suppliers clients purchase orders quotes receipts shipments builds refurb">'+
+        '<dl class="set-stats">'+stats.map(s=>'<div><dt>'+s[0]+'</dt><dd>'+s[1].toLocaleString()+'</dd></div>').join('')+'</dl></div>'+
+      setRow('Data size', big?'Large enough that saving may feel slower. Remove big attachments you no longer need.':'Everything above, including any files still stored in the app.', '<span class="set-value">'+(mb<0.1?'&lt; 0.1':mb.toFixed(1))+' MB</span>', {cls:big?'set-row-warn':'', keywords:'size storage large'}))+
+    setGroup('Backup & restore', '',
+      setRow('Export a backup', 'Download one JSON file with everything: items, BOM, suppliers, clients, demand plan, documents, shipments and manufacturing.', '<button class="btn" id="export-data">Export data</button>', {keywords:'export backup download json'})+
+      setRow('Restore from a backup', 'Replaces the current data with a backup file. Export first if you might want today’s data back.', '<button class="btn" id="import-data">Import data…</button><input type="file" id="import-file" accept="application/json" class="hidden">', {keywords:'import restore upload json'}))+
+    setGroup('Danger zone', '',
+      setRow('Reset to sample data', 'Replaces items, BOM, suppliers, demand plan and documents with the starter set. New Builds and Refurb Jobs are kept. This can’t be undone.', '<button class="btn danger" id="reset-sample">Reset…</button>', {keywords:'reset sample wipe clear'}),
+      {cls:'set-group-danger'});
+}
+const SETTINGS_RENDER={account:settingsAccountHtml, documents:settingsDocumentsHtml, purchasing:settingsPurchasingHtml, catalog:settingsCatalogHtml, manufacturing:settingsManufacturingHtml, health:settingsHealthHtml, data:settingsDataHtml};
+
 function renderSettings(){
   const el=document.getElementById('panel-settings');
-  const bigSize = JSON.stringify(DB).length >= SIZE_WARN_THRESHOLD;
-  const auditHtml=renderDataAudit();
-  el.innerHTML=
-    docsSettingsCardHtml()+
-    '<div class="callout '+(bigSize?'':'hidden')+'" id="size-warn">This file has gotten large (attachments included). Saving may start to feel a little slower. Consider removing large attachments you no longer need if things feel sluggish.</div>'+
-    (auditHtml? '<div class="card"><div class="card-head"><h3>Data audit</h3></div><div class="card-body">'+auditHtml+'</div></div>' : '')+
-    '<div class="card"><div class="card-head"><h3>Data management</h3></div><div class="card-body">'+
-      '<div class="toolbar no-print" style="flex-wrap:wrap">'+
-        '<button class="btn" id="export-data">Export data (JSON)</button>'+
-        '<button class="btn" id="import-data">Import data</button>'+
-        '<input type="file" id="import-file" accept="application/json" class="hidden">'+
-        '<button class="btn danger" id="reset-sample">Reset to sample</button>'+
-      '</div>'+
-      helpNote('What do these do?', '<b>Export data</b> — download a JSON backup of everything (items, BOM, links, suppliers, demand plan, purchase orders, attached files).<br><b>Import data</b> — restore from a JSON backup.<br><b>Reset to sample</b> — reloads the starter MRP data. New Builds and Refurb Jobs are kept.')+
-    '</div></div>'+
-    (window.MFG_API?MFG_API.settingsCardHtml():'')+
-    '<div class="card"><div class="card-head"><h3>Purchase order statuses</h3></div><div class="card-body">'+
-      '<div id="po-status-list"></div>'+
-      '<div class="toolbar no-print"><input id="new-status-input" placeholder="New status name" style="width:220px"><button class="btn sm" id="add-status-btn">+ Add</button></div>'+
-      helpNote('How does this work?', 'These are the status options available on each Purchase Order. The <b>last one in this list</b> is treated as "received / closed" — hitting "Receive" on a PO sets it to that status and adds its quantities to stock.')+
-    '</div></div>'+
-    '<div class="card"><div class="card-head"><h3>Item categories</h3></div><div class="card-body">'+
-      '<div id="item-group-list"></div>'+
-      '<div class="toolbar no-print"><input id="new-item-group-input" placeholder="New category name" style="width:220px"><button class="btn sm" id="add-item-group-btn">+ Add</button></div>'+
-      helpNote('How does this work?', 'These are the category options available on each component/part on the <b>Items</b> tab — pick one per item from the dropdown there to group the list. Anything left blank shows under "Uncategorized".')+
-    '</div></div>';
-  document.getElementById('export-data').addEventListener('click',()=>{
-    const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dragon-seats-ops-backup.json'; a.click();
+  const issues=settingsHealthIssues().total;
+  let navHtml='', lastGroup='';
+  SETTINGS_SECTIONS.forEach(s=>{
+    if(s.group!==lastGroup){ navHtml+='<div class="set-nav-label">'+s.group+'</div>'; lastGroup=s.group; }
+    const badge=s.key==='health'&&issues?'<span class="set-nav-badge">'+issues+'</span>':'';
+    navHtml+='<button class="set-nav-item'+(s.key===settingsSection?' active':'')+'" data-sec="'+s.key+'">'+s.label+badge+'</button>';
   });
-  document.getElementById('import-data').addEventListener('click',()=>document.getElementById('import-file').click());
-  document.getElementById('import-file').addEventListener('change',e=>{
+  const body=SETTINGS_SECTIONS.map(s=>
+    '<div class="set-section'+(s.key===settingsSection?'':' hidden')+'" data-sec="'+s.key+'">'+
+      '<div class="set-section-head"><h2>'+s.title+'</h2><p>'+s.desc+'</p></div>'+
+      SETTINGS_RENDER[s.key]()+
+    '</div>').join('');
+  el.innerHTML=
+    '<div class="set-layout">'+
+      '<nav class="set-nav" aria-label="Settings sections">'+
+        '<div class="search-input set-search"><input id="set-search" type="search" placeholder="Search settings" autocomplete="off" value="'+escAttr(settingsQuery)+'"></div>'+
+        navHtml+
+      '</nav>'+
+      '<div class="set-main">'+
+        '<div class="set-results-head hidden" id="set-results-head"></div>'+
+        body+
+        '<div class="set-empty hidden" id="set-empty">No settings match your search.</div>'+
+      '</div>'+
+    '</div>';
+  wireSettingsPanel();
+  applySettingsSearch();
+}
+function showSettingsSection(key){
+  settingsSection=key; try{ localStorage.setItem(SETTINGS_SEC_KEY,key); }catch(e){}
+  settingsQuery=''; const s=document.getElementById('set-search'); if(s) s.value='';
+  document.querySelectorAll('#panel-settings .set-nav-item').forEach(b=>b.classList.toggle('active', b.dataset.sec===key));
+  applySettingsSearch();
+  const c=document.querySelector('.content'); if(c) c.scrollTop=0;
+}
+function applySettingsSearch(){
+  const q=settingsQuery.trim().toLowerCase();
+  const panel=document.getElementById('panel-settings'); if(!panel) return;
+  const head=document.getElementById('set-results-head');
+  let hits=0;
+  panel.querySelectorAll('.set-section').forEach(sec=>{
+    if(!q){
+      sec.classList.toggle('hidden', sec.dataset.sec!==settingsSection);
+      sec.querySelectorAll('.set-row,.set-group').forEach(r=>r.classList.remove('hidden'));
+      return;
+    }
+    let secHits=0;
+    sec.querySelectorAll('.set-group').forEach(g=>{
+      const groupText=(g.querySelector('.set-group-head')||{}).textContent.toLowerCase();
+      let gHits=0;
+      g.querySelectorAll('.set-row').forEach(r=>{ const ok=r.dataset.search.includes(q)||groupText.includes(q); r.classList.toggle('hidden',!ok); if(ok) gHits++; });
+      g.classList.toggle('hidden', !gHits); secHits+=gHits;
+    });
+    sec.classList.toggle('hidden', !secHits); hits+=secHits;
+  });
+  panel.querySelectorAll('.set-nav-item').forEach(b=>b.classList.toggle('active', !q && b.dataset.sec===settingsSection));
+  head.classList.toggle('hidden', !q);
+  panel.querySelector('.set-main').classList.toggle('searching', !!q);
+  if(q) head.textContent=hits?plural(hits,'result')+' for “'+settingsQuery.trim()+'”':'';
+  document.getElementById('set-empty').classList.toggle('hidden', !q||!!hits);
+}
+function wireSettingsListEditor(id, getList, onAdd, onRemove){
+  const inp=document.getElementById(id+'-input'), add=document.getElementById(id+'-add');
+  const commit=()=>{ const v=inp.value.trim(); if(!v) return;
+    if(getList().some(x=>x.toLowerCase()===v.toLowerCase())){ inp.select(); return; }
+    onAdd(v); save(); renderSettings(); const n=document.getElementById(id+'-input'); if(n) n.focus(); };
+  if(add) add.addEventListener('click', commit);
+  if(inp) inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); commit(); } });
+  document.querySelectorAll('#panel-settings .set-icon-btn[data-list="'+id+'"]').forEach(b=>b.addEventListener('click',()=>onRemove(Number(b.dataset.i))));
+}
+function wireSettingsPanel(){
+  const panel=document.getElementById('panel-settings');
+  panel.querySelectorAll('.set-nav-item').forEach(b=>b.addEventListener('click',()=>showSettingsSection(b.dataset.sec)));
+  const search=document.getElementById('set-search');
+  search.addEventListener('input',()=>{ settingsQuery=search.value; applySettingsSearch(); });
+  search.addEventListener('keydown',e=>{ if(e.key==='Escape'){ settingsQuery=''; search.value=''; applySettingsSearch(); } });
+
+  // Account
+  const so=document.getElementById('set-signout');
+  if(so) so.addEventListener('click',()=>{ const l=document.getElementById('cloud-signout-link'); if(l) l.click(); });
+
+  // Documents
+  const d=document.getElementById('set-drive'); if(d) d.addEventListener('click', async()=>{ const h=await chooseDocsRoot(); if(h) renderSettings(); });
+  const mv=document.getElementById('move-to-drive'); if(mv) mv.addEventListener('click', ()=>{ mv.disabled=true; mv.textContent='Moving…'; moveAttachmentsToDrive(); });
+  const k=document.getElementById('set-key'); if(k) k.addEventListener('click', openApiKeyModal);
+
+  // Purchasing — new statuses go before the closing (last) step so they don't silently become "closed"
+  wireSettingsListEditor('po-status', ()=>DB.lists.poStatus,
+    v=>{ const L=DB.lists.poStatus; const ci=L.indexOf(closedStatusName()); L.splice(ci<0?L.length:ci,0,v); },
+    i=>{ const L=DB.lists.poStatus, s=L[i];
+      if(L.length<=1){ alertModal('Keep at least one status.'); return; }
+      const n=DB.purchaseOrders.filter(po=>po.status===s).length;
+      const msg=(s===closedStatusName()?'“'+s+'” is the step that closes a PO. If you remove it, “'+L[L.length-2]+'” becomes the closing step. ':'')+
+        (n?plural(n,'purchase order')+' still use “'+s+'” and will keep that label until changed. ':'')+'Remove this status?';
+      confirmModal(msg, ()=>{ L.splice(i,1); save(); renderSettings(); }, {okLabel:'Remove'}); });
+
+  // Catalog
+  wireSettingsListEditor('item-group', ()=>DB.lists.itemGroups,
+    v=>DB.lists.itemGroups.push(v),
+    i=>confirmModal('Remove “'+DB.lists.itemGroups[i]+'”? Items set to it will show under “Uncategorized”. Nothing is deleted.', ()=>{ DB.lists.itemGroups.splice(i,1); save(); renderSettings(); }, {okLabel:'Remove'}));
+
+  // Manufacturing — locations keep their ids
+  if(DB.mfg && DB.mfg.inv){
+    wireSettingsListEditor('mfg-loc', ()=>DB.mfg.inv.locations.map(l=>l.name),
+      v=>DB.mfg.inv.locations.push({id:uid(), name:v}),
+      i=>confirmModal('Remove “'+DB.mfg.inv.locations[i].name+'” from the location list? Records already set to it keep their value.', ()=>{ DB.mfg.inv.locations.splice(i,1); save(); renderSettings(); }, {okLabel:'Remove'}));
+  }
+  if(window.MFG_API) MFG_API.wireSettings(); // wires the Asset Hub import button + file input
+
+  // Backup & data
+  const ex=document.getElementById('export-data');
+  if(ex) ex.addEventListener('click',()=>{
+    const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='dragon-seats-ops-backup-'+todayISO()+'.json'; a.click();
+  });
+  const im=document.getElementById('import-data'), imf=document.getElementById('import-file');
+  if(im) im.addEventListener('click',()=>imf.click());
+  if(imf) imf.addEventListener('change',e=>{
     const f=e.target.files[0]; if(!f) return;
     const reader=new FileReader();
-    reader.onload=()=>{ try{ const keepMfg=DB&&DB.mfg; DB=migrateToV2(JSON.parse(reader.result)); if(!DB.mfg&&keepMfg) DB.mfg=keepMfg; ensureShape(); save(); runMRP(); renderTab(currentTab); renderCounts(); alertModal('Import complete.'); }catch(err){ alertModal('Could not read that file as JSON.'); } };
-    reader.readAsText(f);
+    reader.onload=()=>{
+      let parsed; try{ parsed=JSON.parse(reader.result); }catch(err){ alertModal('Could not read that file as JSON.'); return; }
+      confirmModal('Replace all current data with the backup “'+f.name+'”? This can’t be undone.', ()=>{
+        try{ const keepMfg=DB&&DB.mfg; DB=migrateToV2(parsed); if(!DB.mfg&&keepMfg) DB.mfg=keepMfg; ensureShape(); save(); runMRP(); renderTab(currentTab); renderCounts(); alertModal('Import complete.'); }
+        catch(err){ alertModal('That file could not be imported: '+err.message); }
+      }, {okLabel:'Replace data'});
+    };
+    reader.readAsText(f); imf.value='';
   });
-  document.getElementById('reset-sample').addEventListener('click',()=>{
-    confirmModal('Reset all Dragon Seats Ops data to the sample starting point? This cannot be undone.', ()=>{
+  const rs=document.getElementById('reset-sample');
+  if(rs) rs.addEventListener('click',()=>{
+    confirmModal('Reset all Dragon Seats Ops data to the sample starting point? New Builds and Refurb Jobs are kept. This cannot be undone.', ()=>{
       const keepMfg=DB&&DB.mfg; DB=sample(); if(keepMfg) DB.mfg=keepMfg; ensureShape(); save(); runMRP(); renderTab(currentTab); renderCounts();
     }, {okLabel:'Reset'});
-  });
-  wireDocsSettingsCard();
-  if(window.MFG_API) MFG_API.wireSettings();
-  renderStatusList();
-  document.getElementById('add-status-btn').addEventListener('click',()=>{
-    const inp=document.getElementById('new-status-input');
-    const v=inp.value.trim(); if(!v) return;
-    DB.lists.poStatus.push(v); inp.value=''; save(); renderStatusList();
-  });
-  renderItemGroupList();
-  document.getElementById('add-item-group-btn').addEventListener('click',()=>{
-    const inp=document.getElementById('new-item-group-input');
-    const v=inp.value.trim(); if(!v) return;
-    if(!DB.lists.itemGroups.includes(v)) DB.lists.itemGroups.push(v);
-    inp.value=''; save(); renderItemGroupList();
   });
 }
 
@@ -7590,6 +8049,7 @@ function openShipmentModal(existing, preset){
 /* ---------------- init ---------------- */
 let currentTab='dash';
 async function init(){
+  if(window.Cloud) await Cloud.start();
   await load();
   runMRP();
   document.querySelectorAll('.tab[data-tab]').forEach(btn=>{
